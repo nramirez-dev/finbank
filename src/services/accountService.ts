@@ -8,8 +8,14 @@ export const accountService = {
     return accounts;
   },
 
-  getById: async (id: string): Promise<Account | undefined> => {
-    return accounts.find((a) => a.id === id);
+  getById: async (id: string): Promise<Account> => {
+    const account = accounts.find((a) => a.id === id);
+
+    if (!account) {
+      throw new Error('Account not found');
+    }
+
+    return account;
   },
 
   getByOwnerId: async (ownerId: string): Promise<Account[]> => {

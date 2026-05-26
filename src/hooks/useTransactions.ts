@@ -17,3 +17,11 @@ export const useTransaction = (id: string) => {
     staleTime: STALE_TIME.medium,
   });
 };
+
+export const useRecentTransactions = (limit = 5) => {
+  return useQuery({
+    queryKey: [QUERY_KEYS.transactions, 'recent', limit],
+    queryFn: () => transactionService.getRecent(limit),
+    staleTime: STALE_TIME.medium,
+  });
+};
