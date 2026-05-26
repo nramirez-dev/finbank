@@ -38,33 +38,35 @@ export const AccountCard = ({ account, isSelected = false, onPress }: AccountCar
           end={{ x: 1, y: 1 }}
           style={styles.card}
         >
-          {/* Header */}
-          <View style={styles.cardHeader}>
-            <View style={styles.logoCircle}>
-              <Text style={styles.logoText}>F</Text>
+          <View style={styles.cardContent}>
+            {/* Header */}
+            <View style={styles.cardHeader}>
+              <View style={styles.logoCircle}>
+                <Text style={styles.logoText}>F</Text>
+              </View>
+              <Text style={styles.cardType}>
+                {account.type.toUpperCase()} · {account.currency}
+              </Text>
             </View>
-            <Text style={styles.cardType}>
-              {account.type.toUpperCase()} · {account.currency}
-            </Text>
-          </View>
 
-          {/* Body */}
-          <View style={styles.cardBody}>
-            <Text style={styles.cardNumber}>**** {account.id.slice(-4)}</Text>
-            <Text style={styles.cardBalance}>
-              {formatCurrency(account.balance, account.currency)}
-            </Text>
-          </View>
-
-          {/* Footer decoration */}
-          <View style={styles.cardFooter}>
-            <View style={styles.chip}>
-              <View style={styles.chipLine} />
-              <View style={styles.chipLine} />
-              <View style={styles.chipLine} />
+            {/* Body */}
+            <View style={styles.cardBody}>
+              <Text style={styles.cardNumber}>**** {account.id.slice(-4)}</Text>
+              <Text style={styles.cardBalance}>
+                {formatCurrency(account.balance, account.currency)}
+              </Text>
             </View>
-            <View style={styles.contactless}>
-              <Text style={styles.contactlessText}>{'}'}</Text>
+
+            {/* Footer decoration */}
+            <View style={styles.cardFooter}>
+              <View style={styles.chip}>
+                <View style={styles.chipLine} />
+                <View style={styles.chipLine} />
+                <View style={styles.chipLine} />
+              </View>
+              <View style={styles.contactless}>
+                <Text style={styles.contactlessText}>{'}'}</Text>
+              </View>
             </View>
           </View>
         </LinearGradient>
@@ -118,6 +120,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
+  cardContent: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
   cardBody: {
     marginTop: 10,
   },
@@ -138,7 +144,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 'auto' as unknown as number,
   },
   chip: {
     flexDirection: 'row',
