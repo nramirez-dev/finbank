@@ -1,6 +1,6 @@
-import { View, Text, Pressable } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ArrowDownLeft, ArrowUpRight, Send } from 'lucide-react-native';
 import type { Transaction } from '@/domain/entities/Transaction';
-import { Badge } from '@/components/atoms/Badge';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { formatDate } from '@/lib/formatDate';
 
@@ -9,44 +9,72 @@ interface TransactionCardProps {
   onPress: () => void;
 }
 
-const typeConfig: Record<
-  Transaction['type'],
-  { badgeVariant: 'success' | 'danger' | 'info'; amountPrefix: string; icon: string; amountColor: string }
-> = {
-  depósito: { badgeVariant: 'success', amountPrefix: '+', icon: 'D', amountColor: 'text-success' },
-  retiro: { badgeVariant: 'danger', amountPrefix: '-', icon: 'R', amountColor: 'text-danger' },
-  transferencia: { badgeVariant: 'info', amountPrefix: '', icon: 'T', amountColor: 'text-primary' },
+type IconCfg = {
+  Icon: typeof ArrowDownLeft;
+  color: string;
+  amountPrefix: string;
+};
+
+const TYPE_ICON: Record<Transaction['type'], IconCfg> = {
+  depósito:      { Icon: ArrowDownLeft, color: '#10b981', amountPrefix: '+' },
+  retiro:        { Icon: ArrowUpRight,  color: '#ef4444', amountPrefix: '−' },
+  transferencia: { Icon: Send,          color: '#3b82f6', amountPrefix: ''  },
 };
 
 export const TransactionCard = ({ transaction, onPress }: TransactionCardProps) => {
-  const { badgeVariant, amountPrefix, icon, amountColor } = typeConfig[transaction.type];
-  const accountLabel = `${transaction.fromAccountId.slice(-4)} -> ${transaction.toAccountId.slice(-4)}`;
+  const { Icon, color, amountPrefix } = TYPE_ICON[transaction.type];
 
   return (
-    <Pressable
-      className="flex-row items-center gap-3 px-4 py-3 bg-white dark:bg-dark-surface rounded-xl mx-4 mb-2"
-      onPress={onPress}
-    >
-      <View className="h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-        <Text className="text-sm font-bold text-slate-600 dark:text-slate-200">{icon}</Text>
+    <Pressable style={styles.container} onPress={onPress}>
+      <View style={[styles.iconBox, { backgroundColor: `${color}22` }]}>
+        <Icon size={22} color={color} />
       </View>
-      <View className="flex-1 gap-1">
-        <Text className="text-sm font-medium text-slate-900 dark:text-white" numberOfLines={1}>
+
+      <View style={styles.content}>
+        <Text style={styles.description} numberOfLines={1}>
           {transaction.description}
         </Text>
-        <View className="flex-row items-center gap-2">
-          <Text className="text-xs text-slate-500 dark:text-slate-400">
-            {formatDate(transaction.date)}
-          </Text>
-          <Text className="text-xs text-slate-400 dark:text-slate-500">{accountLabel}</Text>
-        </View>
+        <Text style={styles.date}>{formatDate(transaction.date)}</Text>
       </View>
-      <View className="items-end gap-1">
-        <Text className={`text-sm font-semibold ${amountColor}`}>
-          {amountPrefix}{formatCurrency(transaction.amount)}
-        </Text>
-        <Badge label={transaction.type} variant={badgeVariant} />
-      </View>
+
+      <Text style={[styles.amount, { color }]}>
+        {amountPrefix}{formatCurrency(transaction.amount)}
+      </Text>
     </Pressable>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  iconBox: {
+    width: 46,
+    height: 46,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  content: {
+    flex: 1,
+    marginLeft: 14,
+    gap: 4,
+  },
+  description: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  date: {
+    color: 'rgba(255, 255, 255, 0.42)',
+    fontSize: 12,
+  },
+  amount: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});

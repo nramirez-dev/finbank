@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
-import { ScrollView, View, Text, Pressable, RefreshControl } from 'react-native';
+import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Bell, Search } from 'lucide-react-native';
 
 import { useProfile } from '@/hooks/useProfile';
 import { useAccountsByOwner } from '@/hooks/useAccounts';
 import { useRecentTransactions } from '@/hooks/useTransactions';
 import { useAppStore } from '@/store/useAppStore';
 
-import { Avatar } from '@/components/atoms/Avatar';
 import { Skeleton, SkeletonRow } from '@/components/atoms/Skeleton';
 import { AccountSummary } from '@/components/organisms/AccountSummary';
 import { BalanceChart } from '@/components/organisms/BalanceChart';
@@ -17,12 +17,18 @@ import { EmptyState } from '@/components/organisms/EmptyState';
 import type { Transaction } from '@/domain/entities/Transaction';
 
 const HeaderSkeleton = () => (
-  <View className="flex-row items-center justify-between px-4 pt-14 pb-6">
-    <View className="gap-2">
-      <Skeleton width={90} height={13} borderRadius={6} />
-      <Skeleton width={160} height={22} borderRadius={6} />
+  <View style={styles.headerRow}>
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      <Skeleton width={48} height={48} borderRadius={24} />
+      <View style={{ gap: 6 }}>
+        <Skeleton width={80} height={12} borderRadius={4} />
+        <Skeleton width={140} height={18} borderRadius={4} />
+      </View>
     </View>
-    <Skeleton width={44} height={44} borderRadius={22} />
+    <View style={{ flexDirection: 'row', gap: 10 }}>
+      <Skeleton width={44} height={44} borderRadius={14} />
+      <Skeleton width={44} height={44} borderRadius={14} />
+    </View>
   </View>
 );
 
@@ -70,86 +76,196 @@ export default function HomeScreen() {
   };
 
   return (
-    <ScrollView
-      className="flex-1 bg-slate-50 dark:bg-dark-bg"
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor="#1B4FD8"
-          colors={['#1B4FD8']}
-        />
-      }
-    >
-      {/* Header */}
-      {profileLoading ? (
-        <HeaderSkeleton />
-      ) : profileError ? (
-        <View className="px-4 pt-14 pb-6">
-          <Text className="text-base font-semibold text-slate-900 dark:text-white">FinBank</Text>
-        </View>
-      ) : (
-        <View className="flex-row items-center justify-between px-4 pt-14 pb-6">
-          <View>
-            <Text className="text-sm text-slate-500 dark:text-slate-400">{getGreeting()},</Text>
-            <Text className="text-xl font-bold text-slate-900 dark:text-white">
-              {profile?.name ?? '—'}
-            </Text>
-          </View>
-          <Avatar uri={profile?.avatar} fallback={profile?.name?.[0]} size="md" />
-        </View>
-      )}
-
-      {/* Account summary */}
-      <View className="mb-6">
-        {accountsError ? (
-          <ErrorState message="Error al cargar cuentas" onRetry={refetchAccounts} />
-        ) : (
-          <AccountSummary
-            accounts={accounts}
-            isLoading={accountsLoading}
-            selectedAccountId={selectedAccountId}
-            onSelectAccount={setSelectedAccount}
+    <View style={styles.root}>
+      <ScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#3b82f6"
+            colors={['#3b82f6']}
           />
+        }
+      >
+        {/* ── Header ── */}
+        <View style={styles.headerArea}>
+          {profileLoading ? (
+            <HeaderSkeleton />
+          ) : profileError ? (
+            <View style={styles.headerRow}>
+              <Text style={styles.userName}>FinBank</Text>
+            </View>
+          ) : (
+            <View style={styles.headerRow}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                {profile?.avatar ? (
+                  <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+                ) : (
+                  <View style={styles.avatarFallback}>
+                    <Text style={styles.avatarLetter}>{profile?.name?.[0] ?? 'U'}</Text>
+                  </View>
+                )}
+                <View>
+                  <Text style={styles.greeting}>{getGreeting()}</Text>
+                  <Text style={styles.userName}>{profile?.name ?? '—'}</Text>
+                </View>
+              </View>
+
+              <View style={{ flexDirection: 'row', gap: 10 }}>
+                <Pressable style={styles.iconButton} onPress={() => router.push('/search')}>
+                  <Search size={20} color="#fff" />
+                </Pressable>
+                <Pressable style={styles.iconButton}>
+                  <Bell size={20} color="#fff" />
+                </Pressable>
+              </View>
+            </View>
+          )}
+        </View>
+
+        {/* ── Account summary ── */}
+        <View style={styles.section}>
+          {accountsError ? (
+            <ErrorState message="Error al cargar cuentas" onRetry={refetchAccounts} />
+          ) : (
+            <AccountSummary
+              accounts={accounts}
+              isLoading={accountsLoading}
+              selectedAccountId={selectedAccountId}
+              onSelectAccount={setSelectedAccount}
+            />
+          )}
+        </View>
+
+        {/* ── Balance chart ── */}
+        {!txError && (
+          <View style={styles.section}>
+            <BalanceChart transactions={transactions} isLoading={txLoading} />
+          </View>
         )}
-      </View>
 
-      {/* Balance chart */}
-      {!txError && (
-        <View className="mb-6">
-          <BalanceChart transactions={transactions} isLoading={txLoading} />
+        {/* ── Recent transactions ── */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Transacciones recientes</Text>
+          <Pressable onPress={() => router.push('/search')} hitSlop={8}>
+            <Text style={styles.sectionLink}>Ver todas</Text>
+          </Pressable>
         </View>
-      )}
 
-      {/* Recent transactions header */}
-      <View className="px-4 flex-row items-center justify-between mb-3">
-        <Text className="text-base font-semibold text-slate-900 dark:text-white">
-          Transacciones recientes
-        </Text>
-        <Pressable onPress={() => router.push('/search')} hitSlop={8}>
-          <Text className="text-sm font-medium text-primary">Ver todas</Text>
-        </Pressable>
-      </View>
+        {txLoading ? (
+          <View>
+            {Array.from({ length: 5 }).map((_, i) => (
+              <SkeletonRow key={i} />
+            ))}
+          </View>
+        ) : txError ? (
+          <ErrorState message="Error al cargar transacciones" onRetry={refetchTx} />
+        ) : !transactions?.length ? (
+          <EmptyState message="No hay transacciones recientes" />
+        ) : (
+          <View style={styles.txCard}>
+            {transactions.map((tx) => (
+              <TransactionCard key={tx.id} transaction={tx} onPress={() => handlePressTx(tx)} />
+            ))}
+          </View>
+        )}
 
-      {/* Transactions */}
-      {txLoading ? (
-        <View>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <SkeletonRow key={i} />
-          ))}
-        </View>
-      ) : txError ? (
-        <ErrorState message="Error al cargar transacciones" onRetry={refetchTx} />
-      ) : !transactions?.length ? (
-        <EmptyState message="No hay transacciones recientes" />
-      ) : (
-        <View className="pb-8">
-          {transactions.map((tx) => (
-            <TransactionCard key={tx.id} transaction={tx} onPress={() => handlePressTx(tx)} />
-          ))}
-        </View>
-      )}
-    </ScrollView>
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  scroll: {
+    flex: 1,
+  },
+  headerArea: {
+    paddingTop: 56,
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderColor: 'rgba(59, 130, 246, 0.5)',
+  },
+  avatarFallback: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(59, 130, 246, 0.18)',
+    borderWidth: 2,
+    borderColor: 'rgba(59, 130, 246, 0.45)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarLetter: {
+    color: '#3b82f6',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  greeting: {
+    color: 'rgba(255, 255, 255, 0.48)',
+    fontSize: 13,
+    marginBottom: 2,
+  },
+  userName: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  sectionLink: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  txCard: {
+    marginHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.06)',
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    marginBottom: 8,
+  },
+});
