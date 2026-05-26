@@ -1,0 +1,23 @@
+[
+  {
+    "id": "acc-001",
+    "balance": 125430.50,
+    "currency": "DOP",
+    "type": "ahorros",
+    "ownerId": "user-001"
+  },
+  {
+    "id": "acc-002",
+    "balance": 3200.00,
+    "currency": "USD",
+    "type": "corriente",
+    "ownerId": "user-001"
+  },
+  {
+    "id": "acc-003",
+    "balance": 58750.00,
+    "currency": "DOP",
+    "type": "corriente",
+    "ownerId": "user-001"
+  }
+]

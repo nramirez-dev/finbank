@@ -1,0 +1,66 @@
+{
+  "name": "finbank",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest --watchAll",
+    "test:ci": "jest --ci",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "~56.0.12",
+    "@hookform/resolvers": "^3.10.0",
+    "@tanstack/react-query": "^5.100.14",
+    "babel-preset-expo": "^56.0.12",
+    "expo": "~56.0.4",
+    "expo-router": "~4.0.0",
+    "expo-status-bar": "~56.0.4",
+    "nativewind": "^4.2.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-hook-form": "^7.76.1",
+    "react-native": "0.85.3",
+    "react-native-gifted-charts": "^1.4.77",
+    "react-native-reanimated": "~3.16.1",
+    "react-native-web": "^0.21.2",
+    "tailwindcss": "^3.4.19",
+    "zod": "^3.25.76",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^12.9.0",
+    "@types/jest": "^30.0.0",
+    "@types/react": "~19.2.2",
+    "eslint": "^9.39.4",
+    "eslint-config-expo": "^8.0.1",
+    "jest": "^30.4.2",
+    "jest-expo": "~56.0.4",
+    "prettier": "^3.8.3",
+    "typescript": "~6.0.3"
+  },
+  "overrides": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
+  "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "setupFilesAfterFramework": [
+      "@testing-library/jest-native/extend-expect"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|nativewind)"
+    ],
+    "testMatch": [
+      "**/src/__tests__/**/*.test.{ts,tsx}"
+    ]
+  }
+}
