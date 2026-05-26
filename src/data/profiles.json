@@ -1,8 +1,14 @@
 [
   {
     "id": "user-001",
-    "name": "Ana García",
+    "name": "Ana Garcia",
     "email": "ana.garcia@email.com",
-    "avatar": "https://i.pravatar.cc/150?img=47"
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana%20Garcia"
+  },
+  {
+    "id": "user-002",
+    "name": "Luis Ramirez",
+    "email": "luis.ramirez@email.com",
+    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Luis%20Ramirez"
   }
 ]

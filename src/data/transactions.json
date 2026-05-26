@@ -1,74 +1,272 @@
 [
   {
     "id": "txn-001",
-    "amount": 5000.00,
-    "date": "2026-05-20T10:30:00.000Z",
+    "amount": 18500.00,
+    "date": "2026-05-25T09:15:00.000Z",
     "type": "depósito",
     "fromAccountId": "acc-003",
     "toAccountId": "acc-001",
-    "description": "Nómina mayo 2026"
+    "description": "Nomina mayo"
   },
   {
     "id": "txn-002",
-    "amount": 1200.00,
-    "date": "2026-05-18T14:15:00.000Z",
+    "amount": 2500.00,
+    "date": "2026-05-23T18:40:00.000Z",
     "type": "retiro",
     "fromAccountId": "acc-001",
     "toAccountId": "acc-001",
-    "description": "Retiro cajero automático"
+    "description": "Retiro cajero"
   },
   {
     "id": "txn-003",
-    "amount": 350.00,
-    "date": "2026-05-16T09:00:00.000Z",
+    "amount": 3200.00,
+    "date": "2026-05-21T12:05:00.000Z",
     "type": "transferencia",
     "fromAccountId": "acc-001",
     "toAccountId": "acc-002",
-    "description": "Pago servicios"
+    "description": "Ahorro programado"
   },
   {
     "id": "txn-004",
-    "amount": 2500.00,
-    "date": "2026-05-14T16:45:00.000Z",
-    "type": "depósito",
-    "fromAccountId": "acc-003",
-    "toAccountId": "acc-001",
-    "description": "Transferencia recibida"
-  },
-  {
-    "id": "txn-005",
-    "amount": 800.00,
-    "date": "2026-05-12T11:20:00.000Z",
+    "amount": 1450.00,
+    "date": "2026-05-19T14:25:00.000Z",
     "type": "retiro",
     "fromAccountId": "acc-002",
     "toAccountId": "acc-002",
-    "description": "Compra supermercado"
+    "description": "Pago supermercado"
+  },
+  {
+    "id": "txn-005",
+    "amount": 6800.00,
+    "date": "2026-05-18T10:10:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-001",
+    "description": "Transferencia familiar"
   },
   {
     "id": "txn-006",
-    "amount": 450.00,
-    "date": "2026-05-10T08:00:00.000Z",
+    "amount": 2200.00,
+    "date": "2026-05-16T16:50:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-003",
+    "description": "Deposito efectivo"
+  },
+  {
+    "id": "txn-007",
+    "amount": 5400.00,
+    "date": "2026-05-14T11:30:00.000Z",
     "type": "transferencia",
     "fromAccountId": "acc-001",
     "toAccountId": "acc-003",
     "description": "Pago alquiler"
   },
   {
-    "id": "txn-007",
-    "amount": 3000.00,
-    "date": "2026-05-08T13:00:00.000Z",
-    "type": "depósito",
-    "fromAccountId": "acc-002",
-    "toAccountId": "acc-001",
-    "description": "Dividendos inversión"
+    "id": "txn-008",
+    "amount": 980.00,
+    "date": "2026-05-12T09:20:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-003",
+    "description": "Farmacia"
   },
   {
-    "id": "txn-008",
-    "amount": 600.00,
-    "date": "2026-05-06T17:30:00.000Z",
+    "id": "txn-009",
+    "amount": 3500.00,
+    "date": "2026-05-10T13:45:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-002",
+    "description": "Venta en linea"
+  },
+  {
+    "id": "txn-010",
+    "amount": 4200.00,
+    "date": "2026-05-08T15:05:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-004",
+    "toAccountId": "acc-003",
+    "description": "Envio USD a DOP"
+  },
+  {
+    "id": "txn-011",
+    "amount": 1250.00,
+    "date": "2026-05-06T19:15:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-004",
+    "toAccountId": "acc-004",
+    "description": "Compra online USD"
+  },
+  {
+    "id": "txn-012",
+    "amount": 9800.00,
+    "date": "2026-04-30T08:50:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-001",
+    "description": "Bono trimestral"
+  },
+  {
+    "id": "txn-013",
+    "amount": 1100.00,
+    "date": "2026-04-27T20:00:00.000Z",
     "type": "retiro",
     "fromAccountId": "acc-001",
     "toAccountId": "acc-001",
     "description": "Pago electricidad"
+  },
+  {
+    "id": "txn-014",
+    "amount": 3000.00,
+    "date": "2026-04-25T10:35:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-001",
+    "description": "Transferencia familiar"
+  },
+  {
+    "id": "txn-015",
+    "amount": 4200.00,
+    "date": "2026-04-22T09:10:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-001",
+    "description": "Reembolso seguro"
+  },
+  {
+    "id": "txn-016",
+    "amount": 7600.00,
+    "date": "2026-04-20T13:00:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-002",
+    "description": "Pago colegio"
+  },
+  {
+    "id": "txn-017",
+    "amount": 1600.00,
+    "date": "2026-04-18T18:30:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-002",
+    "description": "Gasolina"
+  },
+  {
+    "id": "txn-018",
+    "amount": 5200.00,
+    "date": "2026-04-15T07:55:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-004",
+    "toAccountId": "acc-004",
+    "description": "Pago freelance USD"
+  },
+  {
+    "id": "txn-019",
+    "amount": 4100.00,
+    "date": "2026-04-12T12:20:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-003",
+    "description": "Pago mantenimiento"
+  },
+  {
+    "id": "txn-020",
+    "amount": 1900.00,
+    "date": "2026-04-10T21:10:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-003",
+    "description": "Restaurante"
+  },
+  {
+    "id": "txn-021",
+    "amount": 2800.00,
+    "date": "2026-04-07T09:40:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-002",
+    "description": "Intereses ahorro"
+  },
+  {
+    "id": "txn-022",
+    "amount": 6400.00,
+    "date": "2026-03-28T14:05:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-001",
+    "description": "Transferencia familiar"
+  },
+  {
+    "id": "txn-023",
+    "amount": 850.00,
+    "date": "2026-03-26T08:15:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-001",
+    "description": "Suscripcion streaming"
+  },
+  {
+    "id": "txn-024",
+    "amount": 17600.00,
+    "date": "2026-03-24T09:25:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-001",
+    "description": "Nomina marzo"
+  },
+  {
+    "id": "txn-025",
+    "amount": 5000.00,
+    "date": "2026-03-21T16:45:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-004",
+    "description": "Compra USD"
+  },
+  {
+    "id": "txn-026",
+    "amount": 1350.00,
+    "date": "2026-03-18T11:35:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-004",
+    "toAccountId": "acc-004",
+    "description": "Pago software"
+  },
+  {
+    "id": "txn-027",
+    "amount": 2600.00,
+    "date": "2026-03-15T10:05:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-003",
+    "description": "Deposito efectivo"
+  },
+  {
+    "id": "txn-028",
+    "amount": 3100.00,
+    "date": "2026-03-12T15:20:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-002",
+    "description": "Ahorro programado"
+  },
+  {
+    "id": "txn-029",
+    "amount": 900.00,
+    "date": "2026-03-08T12:00:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-002",
+    "description": "Pago agua"
+  },
+  {
+    "id": "txn-030",
+    "amount": 2400.00,
+    "date": "2026-03-02T08:30:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-002",
+    "description": "Reembolso tarjeta"
   }
 ]
