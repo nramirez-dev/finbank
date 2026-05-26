@@ -2,8 +2,8 @@ import { View, Text, Image } from 'react-native';
 
 interface AvatarProps {
   uri?: string;
-  name?: string;
   size?: 'sm' | 'md' | 'lg';
+  fallback?: string;
 }
 
 const sizeMap = {
@@ -12,16 +12,9 @@ const sizeMap = {
   lg: { dim: 64, text: 'text-xl' },
 };
 
-export const Avatar = ({ uri, name, size = 'md' }: AvatarProps) => {
+export const Avatar = ({ uri, fallback, size = 'md' }: AvatarProps) => {
   const { dim, text } = sizeMap[size];
-  const initials = name
-    ? name
-        .split(' ')
-        .map((n) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase()
-    : '?';
+  const initials = fallback?.toUpperCase() ?? '?';
 
   return (
     <View

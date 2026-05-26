@@ -90,8 +90,7 @@ export const TransferForm = ({ onSubmit, isSubmitting = false, accounts: _ }: Tr
       <Button
         label="Transferir"
         onPress={handleSubmit(onSubmit)}
-        isLoading={isSubmitting}
-        fullWidth
+        loading={isSubmitting}
       />
     </View>
   );
