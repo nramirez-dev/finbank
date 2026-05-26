@@ -1,13 +1,23 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 interface ThemeStore {
-  isDark: boolean;
-  toggleTheme: () => void;
-  setDark: (value: boolean) => void;
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+  setDarkMode: (value: boolean) => void;
 }
 
-export const useThemeStore = create<ThemeStore>((set) => ({
-  isDark: false,
-  toggleTheme: () => set((s) => ({ isDark: !s.isDark })),
-  setDark: (value) => set({ isDark: value }),
-}));
+export const useThemeStore = create<ThemeStore>()(
+  persist(
+    (set) => ({
+      isDarkMode: false,
+      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
+      setDarkMode: (value) => set({ isDarkMode: value }),
+    }),
+    {
+      name: 'finbank-theme',
+      storage: createJSONStorage(() => AsyncStorage),
+    }
+  )
+);
