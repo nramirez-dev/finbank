@@ -6,6 +6,8 @@ import type { Account } from '@/domain/entities/Account';
 interface AccountSummaryProps {
   accounts?: Account[];
   isLoading?: boolean;
+  selectedAccountId?: string | null;
+  onSelectAccount?: (accountId: string | null) => void;
 }
 
 const AccountSummarySkeleton = () => (
@@ -16,7 +18,12 @@ const AccountSummarySkeleton = () => (
   </ScrollView>
 );
 
-export const AccountSummary = ({ accounts, isLoading }: AccountSummaryProps) => {
+export const AccountSummary = ({
+  accounts,
+  isLoading,
+  selectedAccountId,
+  onSelectAccount,
+}: AccountSummaryProps) => {
   if (isLoading) return <AccountSummarySkeleton />;
 
   return (
@@ -25,9 +32,17 @@ export const AccountSummary = ({ accounts, isLoading }: AccountSummaryProps) => 
       showsHorizontalScrollIndicator={false}
       contentContainerClassName="px-4 gap-0"
     >
-      {accounts?.map((account) => (
-        <AccountCard key={account.id} account={account} />
-      ))}
+      {accounts?.map((account) => {
+        const isSelected = selectedAccountId === account.id;
+        return (
+          <AccountCard
+            key={account.id}
+            account={account}
+            isSelected={isSelected}
+            onPress={() => onSelectAccount?.(isSelected ? null : account.id)}
+          />
+        );
+      })}
     </ScrollView>
   );
 };

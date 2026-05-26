@@ -8,6 +8,7 @@ interface TransactionListProps {
   isLoading?: boolean;
   isError?: boolean;
   onRetry?: () => void;
+  onPressItem?: (transaction: Transaction) => void;
 }
 
 const TransactionListSkeleton = () => (
@@ -40,6 +41,7 @@ export const TransactionList = ({
   isLoading,
   isError,
   onRetry,
+  onPressItem,
 }: TransactionListProps) => {
   if (isLoading) return <TransactionListSkeleton />;
   if (isError) return <ErrorState onRetry={onRetry} />;
@@ -49,7 +51,12 @@ export const TransactionList = ({
     <FlatList
       data={transactions}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => <TransactionCard transaction={item} />}
+      renderItem={({ item }) => (
+        <TransactionCard
+          transaction={item}
+          onPress={() => onPressItem?.(item)}
+        />
+      )}
       contentContainerClassName="pb-4"
       showsVerticalScrollIndicator={false}
     />
