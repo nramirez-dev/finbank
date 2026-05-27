@@ -37,11 +37,13 @@ export const transactionService = {
     }
 
     if (typeof filters?.minAmount === 'number') {
-      result = result.filter((t) => t.amount >= filters.minAmount);
+      const min = filters.minAmount;
+      result = result.filter((t) => t.amount >= min);
     }
 
     if (typeof filters?.maxAmount === 'number') {
-      result = result.filter((t) => t.amount <= filters.maxAmount);
+      const max = filters.maxAmount;
+      result = result.filter((t) => t.amount <= max);
     }
 
     return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

@@ -36,7 +36,7 @@ export default function TabsLayout() {
         name="transfer"
         options={{
           title: 'Transferir',
-          tabBarIcon: ({ size, color }) => (
+          tabBarIcon: ({ size }) => (
             <View style={styles.transferIcon}>
               <Send size={size - 2} color="#3b82f6" strokeWidth={2} />
             </View>

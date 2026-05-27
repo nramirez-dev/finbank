@@ -45,7 +45,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { activeProfileId, selectedAccountId, setSelectedAccount } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
-  const { px, gap, fontScale } = useResponsive();
+  const { px, fontScale } = useResponsive();
 
   const {
     data: profile,
