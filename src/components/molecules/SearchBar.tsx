@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
+import { Search, X } from 'lucide-react-native';
 
 interface SearchBarProps {
   value: string;
@@ -26,7 +27,6 @@ export const SearchBar = ({
         onChangeText(localValue);
       }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [localValue, onChangeText, value]);
 
@@ -37,20 +37,41 @@ export const SearchBar = ({
   };
 
   return (
-    <View className="flex-row items-center bg-white dark:bg-dark-surface rounded-xl px-4 py-2 border border-slate-200 dark:border-slate-700 mx-4">
-      <Text className="text-slate-400 mr-2">S</Text>
+    <View style={styles.container}>
+      <Search size={20} color="rgba(255,255,255,0.4)" strokeWidth={2} />
       <TextInput
         value={localValue}
         onChangeText={setLocalValue}
         placeholder={placeholder}
-        placeholderTextColor="#94a3b8"
-        className="flex-1 text-slate-900 dark:text-white text-sm"
+        placeholderTextColor="rgba(255,255,255,0.35)"
+        style={styles.input}
+        selectionColor="#3b82f6"
       />
       {localValue.length > 0 && (
-        <TouchableOpacity onPress={handleClear} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text className="text-slate-400 font-medium text-sm">x</Text>
-        </TouchableOpacity>
+        <Pressable onPress={handleClear} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <X size={16} color="rgba(255,255,255,0.5)" strokeWidth={2} />
+        </Pressable>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    height: 52,
+    marginHorizontal: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    gap: 12,
+  },
+  input: {
+    flex: 1,
+    color: '#ffffff',
+    fontSize: 16,
+  },
+});

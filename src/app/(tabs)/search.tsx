@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { FlatList, View, Text, Pressable } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { useTransactions } from '@/hooks/useTransactions';
@@ -41,51 +41,27 @@ const ExpandedFilters = ({
   onChangeMaxAmount,
   onClear,
 }: ExpandedFiltersProps) => (
-  <View className="mx-4 p-4 bg-white dark:bg-dark-surface rounded-xl border border-slate-200 dark:border-slate-700 gap-4">
-    <View className="gap-2">
-      <Text className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Rango de fechas
-      </Text>
-      <View className="flex-row gap-3">
-        <View className="flex-1">
-          <Input
-            label="Desde"
-            value={dateFrom}
-            onChangeText={onChangeDateFrom}
-            placeholder="YYYY-MM-DD"
-          />
+  <View style={styles.expandedPanel}>
+    <View style={styles.expandedGroup}>
+      <Text style={styles.expandedLabel}>Rango de fechas</Text>
+      <View style={styles.expandedRow}>
+        <View style={styles.expandedHalf}>
+          <Input label="Desde" value={dateFrom} onChangeText={onChangeDateFrom} placeholder="YYYY-MM-DD" />
         </View>
-        <View className="flex-1">
-          <Input
-            label="Hasta"
-            value={dateTo}
-            onChangeText={onChangeDateTo}
-            placeholder="YYYY-MM-DD"
-          />
+        <View style={styles.expandedHalf}>
+          <Input label="Hasta" value={dateTo} onChangeText={onChangeDateTo} placeholder="YYYY-MM-DD" />
         </View>
       </View>
     </View>
 
-    <View className="gap-2">
-      <Text className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-        Rango de monto
-      </Text>
-      <View className="flex-row gap-3">
-        <View className="flex-1">
-          <Input
-            label="Mínimo"
-            value={minAmount}
-            onChangeText={onChangeMinAmount}
-            keyboardType="numeric"
-          />
+    <View style={styles.expandedGroup}>
+      <Text style={styles.expandedLabel}>Rango de monto</Text>
+      <View style={styles.expandedRow}>
+        <View style={styles.expandedHalf}>
+          <Input label="Mínimo" value={minAmount} onChangeText={onChangeMinAmount} keyboardType="numeric" />
         </View>
-        <View className="flex-1">
-          <Input
-            label="Máximo"
-            value={maxAmount}
-            onChangeText={onChangeMaxAmount}
-            keyboardType="numeric"
-          />
+        <View style={styles.expandedHalf}>
+          <Input label="Máximo" value={maxAmount} onChangeText={onChangeMaxAmount} keyboardType="numeric" />
         </View>
       </View>
     </View>
@@ -106,7 +82,6 @@ export default function SearchScreen() {
   const [maxAmount, setMaxAmount] = useState('');
   const [page, setPage] = useState(1);
 
-  // Reset page whenever filters change
   useEffect(() => {
     setPage(1);
   }, [search, typeFilter, dateFrom, dateTo, minAmount, maxAmount]);
@@ -147,31 +122,34 @@ export default function SearchScreen() {
   const loadMore = useCallback(() => setPage((p) => p + 1), []);
 
   return (
-    <View className="flex-1 bg-slate-50 dark:bg-dark-bg">
-      {/* Fixed header — search + filters */}
-      <View className="pt-14 pb-3 gap-3 bg-slate-50 dark:bg-dark-bg">
-        <Text className="px-4 text-2xl font-bold text-slate-900 dark:text-white">Buscar</Text>
+    <View style={styles.root}>
+      {/* Fixed header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Buscar</Text>
+        <Text style={styles.headerSubtitle}>Encuentra tus transacciones</Text>
+      </View>
 
+      <View style={styles.controls}>
         <SearchBar value={search} onChangeText={setSearch} />
 
-        <FilterChip selected={typeFilter} onChange={setTypeFilter} />
+        <View style={styles.chipsRow}>
+          <FilterChip selected={typeFilter} onChange={setTypeFilter} />
+        </View>
 
-        <View className="px-4 flex-row items-center justify-between">
+        <View style={styles.metaRow}>
           <Pressable
             onPress={() => setFiltersOpen((prev) => !prev)}
             hitSlop={8}
-            className="flex-row items-center gap-2"
+            style={styles.moreFiltersBtn}
           >
-            <Text className="text-sm font-medium text-primary">
+            <Text style={styles.moreFiltersText}>
               {filtersOpen ? 'Ocultar filtros' : 'Más filtros'}
             </Text>
-            {hasExpandedFilters && (
-              <View className="w-2 h-2 rounded-full bg-primary" />
-            )}
+            {hasExpandedFilters && <View style={styles.filterDot} />}
           </Pressable>
 
           {!isLoading && (
-            <Text className="text-xs text-slate-500 dark:text-slate-400">
+            <Text style={styles.resultCount}>
               {total} {total === 1 ? 'transacción encontrada' : 'transacciones encontradas'}
             </Text>
           )}
@@ -219,7 +197,7 @@ export default function SearchScreen() {
           }
           ListFooterComponent={
             hasMore ? (
-              <View className="px-4 py-4">
+              <View style={styles.loadMoreWrapper}>
                 <Button
                   label={`Cargar más (${remaining} restantes)`}
                   onPress={loadMore}
@@ -228,12 +206,10 @@ export default function SearchScreen() {
                 />
               </View>
             ) : paginatedData.length > 0 ? (
-              <Text className="text-center text-xs text-slate-400 dark:text-slate-600 py-4">
-                Fin de los resultados
-              </Text>
+              <Text style={styles.endText}>Fin de los resultados</Text>
             ) : null
           }
-          contentContainerStyle={{ paddingBottom: 32 }}
+          contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         />
@@ -241,3 +217,98 @@ export default function SearchScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  header: {
+    paddingTop: 56,
+    paddingBottom: 8,
+    paddingHorizontal: 20,
+  },
+  headerTitle: {
+    color: '#ffffff',
+    fontSize: 32,
+    fontWeight: '800',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 15,
+    marginBottom: 16,
+  },
+  controls: {
+    gap: 12,
+    paddingBottom: 8,
+  },
+  chipsRow: {
+    // FilterChip handles its own horizontal padding
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  moreFiltersBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  moreFiltersText: {
+    color: '#3b82f6',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  filterDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#3b82f6',
+  },
+  resultCount: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 12,
+  },
+  expandedPanel: {
+    marginHorizontal: 16,
+    padding: 16,
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    gap: 16,
+  },
+  expandedGroup: {
+    gap: 8,
+  },
+  expandedLabel: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
+  expandedRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  expandedHalf: {
+    flex: 1,
+  },
+  listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 120,
+  },
+  loadMoreWrapper: {
+    paddingVertical: 12,
+  },
+  endText: {
+    textAlign: 'center',
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 12,
+    paddingVertical: 16,
+  },
+});

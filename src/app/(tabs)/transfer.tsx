@@ -1,9 +1,23 @@
-import { View, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 export default function TransferScreen() {
   return (
-    <View className="flex-1 items-center justify-center bg-surface dark:bg-dark-bg">
-      <Text className="text-xl font-bold text-primary">Transferencias</Text>
+    <View style={styles.root}>
+      <Text style={styles.title}>Transferencias</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#3b82f6',
+  },
+});

@@ -1,4 +1,4 @@
-import { ScrollView, TouchableOpacity, Text } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import type { Transaction } from '@/domain/entities/Transaction';
 
 type FilterValue = Transaction['type'] | 'todos';
@@ -20,23 +20,15 @@ export const FilterChip = ({ selected, onChange }: FilterChipProps) => {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerClassName="gap-2 px-4"
+      contentContainerStyle={styles.content}
     >
       {FILTERS.map((f) => (
         <TouchableOpacity
           key={f.value}
           onPress={() => onChange(f.value)}
-          className={`rounded-full px-4 py-1.5 ${
-            selected === f.value
-              ? 'bg-primary'
-              : 'bg-white dark:bg-dark-surface border border-slate-200 dark:border-slate-700'
-          }`}
+          style={[styles.chip, selected === f.value && styles.chipActive]}
         >
-          <Text
-            className={`text-sm font-medium ${
-              selected === f.value ? 'text-white' : 'text-slate-600 dark:text-slate-300'
-            }`}
-          >
+          <Text style={[styles.label, selected === f.value && styles.labelActive]}>
             {f.label}
           </Text>
         </TouchableOpacity>
@@ -44,3 +36,32 @@ export const FilterChip = ({ selected, onChange }: FilterChipProps) => {
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  content: {
+    paddingHorizontal: 16,
+    gap: 10,
+  },
+  chip: {
+    paddingHorizontal: 18,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+  },
+  chipActive: {
+    backgroundColor: '#3b82f6',
+    borderColor: '#3b82f6',
+  },
+  label: {
+    color: 'rgba(255,255,255,0.65)',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  labelActive: {
+    color: '#fff',
+  },
+});
