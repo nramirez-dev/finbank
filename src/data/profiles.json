@@ -3,12 +3,12 @@
     "id": "user-001",
     "name": "Ana Garcia",
     "email": "ana.garcia@email.com",
-    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Ana%20Garcia"
+    "avatar": "https://api.dicebear.com/7.x/avataaars/png?seed=Ana%20Garcia"
   },
   {
     "id": "user-002",
     "name": "Luis Ramirez",
     "email": "luis.ramirez@email.com",
-    "avatar": "https://api.dicebear.com/7.x/avataaars/svg?seed=Luis%20Ramirez"
+    "avatar": "https://api.dicebear.com/7.x/avataaars/png?seed=Luis%20Ramirez"
   }
 ]

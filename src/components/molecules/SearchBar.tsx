@@ -39,7 +39,7 @@ export const SearchBar = ({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: c.surface, borderColor: c.border }]}>
+    <View style={[styles.container, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
       <Search size={20} color={c.searchIcon} strokeWidth={2} />
       <TextInput
         value={localValue}

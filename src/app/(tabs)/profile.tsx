@@ -195,7 +195,7 @@ export default function ProfileScreen() {
       {/* ── Mis Cuentas ── */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Mis Cuentas</Text>
-        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
           {accountsLoading ? (
             [0, 1].map((i) => (
               <View key={i} style={[styles.row, { backgroundColor: c.surface, borderBottomColor: c.rowBorder }, i === 0 && styles.rowFirst, styles.rowBorder]}>
@@ -246,7 +246,7 @@ export default function ProfileScreen() {
       {/* ── Configuración ── */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Configuración</Text>
-        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
           <SettingRow
             isFirst
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(59,130,246,0.15)' }]}>{isDarkMode ? <Moon size={19} color="#3b82f6" strokeWidth={2} /> : <Sun size={19} color="#3b82f6" strokeWidth={2} />}</View>}
@@ -291,7 +291,7 @@ export default function ProfileScreen() {
       {/* ── Seguridad ── */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Seguridad</Text>
-        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
           <SettingRow
             isFirst
             onPress={() => {}}
@@ -312,7 +312,7 @@ export default function ProfileScreen() {
       {/* ── Soporte ── */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Soporte</Text>
-        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
           <SettingRow
             isFirst
             onPress={() => {}}
@@ -333,7 +333,7 @@ export default function ProfileScreen() {
       {/* ── Sesión ── */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Sesión</Text>
-        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
           <Pressable
             onPress={handleLogout}
             style={[styles.row, styles.rowFirst, styles.rowLast]}

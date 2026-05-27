@@ -57,7 +57,7 @@ export const BalanceChart = ({
   });
 
   return (
-    <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+    <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
       <Text style={[styles.title, { color: c.textSecondary }]}>{title}</Text>
       <BarChart
         data={data}

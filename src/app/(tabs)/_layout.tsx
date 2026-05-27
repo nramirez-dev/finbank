@@ -5,12 +5,21 @@ import { useThemeColors } from '@/lib/useThemeColors';
 
 export default function TabsLayout() {
   const c = useThemeColors();
+  const isDarkMode = c.tabBarBg !== '#ffffff';
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarStyle: [styles.tabBar, { backgroundColor: c.tabBarBg, borderColor: c.tabBarBorder }],
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            backgroundColor: c.tabBarBg,
+            borderColor: c.tabBarBorder,
+            shadowOpacity: isDarkMode ? 0.5 : 0.1,
+            shadowColor: isDarkMode ? '#000' : '#64748b',
+          },
+        ],
         tabBarActiveTintColor: '#3b82f6',
         tabBarInactiveTintColor: c.tabInactive,
         tabBarShowLabel: true,

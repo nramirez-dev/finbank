@@ -1,5 +1,29 @@
 import { useThemeStore } from '@/store/useThemeStore';
 
+interface CardShadow {
+  shadowColor: string;
+  shadowOpacity: number;
+  shadowRadius: number;
+  shadowOffset: { width: number; height: number };
+  elevation: number;
+}
+
+const NO_SHADOW: CardShadow = {
+  shadowColor: '#000',
+  shadowOpacity: 0,
+  shadowRadius: 0,
+  shadowOffset: { width: 0, height: 0 },
+  elevation: 0,
+};
+
+const CARD_SHADOW: CardShadow = {
+  shadowColor: '#64748b',
+  shadowOpacity: 0.1,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 3,
+};
+
 const DARK = {
   bg: '#0f172a',
   surface: '#1e293b',
@@ -21,29 +45,31 @@ const DARK = {
   heroCardGradient: ['#1e293b', '#0f172a'] as [string, string],
   rowBorder: 'rgba(255,255,255,0.08)',
   txCardBorder: 'rgba(255,255,255,0.05)',
+  cardShadow: NO_SHADOW,
 };
 
 const LIGHT = {
-  bg: '#F8FAFC',
+  bg: '#F1F5F9',
   surface: '#ffffff',
-  surfaceAlt: 'rgba(15,23,42,0.03)',
-  border: 'rgba(15,23,42,0.1)',
+  surfaceAlt: '#ffffff',
+  border: '#E2E8F0',
   text: '#0f172a',
   textSecondary: 'rgba(15,23,42,0.55)',
   textMuted: 'rgba(15,23,42,0.35)',
-  inputBg: 'rgba(15,23,42,0.05)',
-  iconBtn: 'rgba(15,23,42,0.06)',
-  chipBg: 'rgba(15,23,42,0.05)',
-  chipBorder: 'rgba(15,23,42,0.1)',
+  inputBg: '#ffffff',
+  iconBtn: '#E2E8F0',
+  chipBg: '#E2E8F0',
+  chipBorder: '#E2E8F0',
   searchIcon: 'rgba(15,23,42,0.4)',
   searchPlaceholder: 'rgba(15,23,42,0.35)',
-  tabBarBg: 'rgba(248,250,252,0.97)',
-  tabBarBorder: 'rgba(15,23,42,0.1)',
+  tabBarBg: '#ffffff',
+  tabBarBorder: '#E2E8F0',
   tabInactive: 'rgba(15,23,42,0.4)',
   balanceCardGradient: ['#1e40af', '#3b82f6'] as [string, string],
   heroCardGradient: ['#1e40af', '#3b82f6'] as [string, string],
-  rowBorder: 'rgba(15,23,42,0.08)',
-  txCardBorder: 'rgba(15,23,42,0.06)',
+  rowBorder: '#E2E8F0',
+  txCardBorder: '#E2E8F0',
+  cardShadow: CARD_SHADOW,
 };
 
 export type ThemeColors = typeof DARK;

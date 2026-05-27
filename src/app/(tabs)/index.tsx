@@ -174,7 +174,7 @@ export default function HomeScreen() {
         ) : !transactions?.length ? (
           <EmptyState message="No hay transacciones recientes" />
         ) : (
-          <View style={[styles.txCard, { marginHorizontal: px, backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
+          <View style={[styles.txCard, { marginHorizontal: px, backgroundColor: c.surfaceAlt, borderColor: c.border, ...c.cardShadow }]}>
             {transactions.map((tx) => (
               <TransactionCard key={tx.id} transaction={tx} onPress={() => handlePressTx(tx)} />
             ))}
