@@ -37,18 +37,29 @@ const ACCOUNT_GRADIENTS: Record<Account['type'], [string, string]> = {
 };
 
 interface StepIndicatorProps { step: number }
-const StepIndicator = ({ step }: StepIndicatorProps) => (
-  <View style={styles.stepsIndicator}>
-    {[1, 2, 3].map((n, i) => (
-      <View key={n} style={styles.stepItem}>
-        <View style={[styles.stepDot, step >= n && styles.stepDotActive]}>
-          {step > n && <CheckCircle size={10} color="#fff" />}
-        </View>
-        {i < 2 && <View style={[styles.stepLine, step > n && styles.stepLineActive]} />}
-      </View>
-    ))}
-  </View>
-);
+const StepIndicator = ({ step }: StepIndicatorProps) => {
+  const isDarkMode = useThemeStore((s) => s.isDarkMode);
+  const inactiveDot = isDarkMode ? 'rgba(255,255,255,0.3)' : '#CBD5E1';
+  const inactiveLine = isDarkMode ? 'rgba(255,255,255,0.2)' : '#CBD5E1';
+  return (
+    <View style={styles.stepsIndicator}>
+      {[1, 2, 3].map((n, i) => {
+        const completed = step > n;
+        const active = step === n;
+        const dotBg = completed ? '#22C55E' : active ? '#1B4FD8' : inactiveDot;
+        const lineBg = step > n ? '#22C55E' : inactiveLine;
+        return (
+          <View key={n} style={styles.stepItem}>
+            <View style={[styles.stepDot, { backgroundColor: dotBg }]}>
+              {completed && <CheckCircle size={10} color="#fff" />}
+            </View>
+            {i < 2 && <View style={[styles.stepLine, { backgroundColor: lineBg }]} />}
+          </View>
+        );
+      })}
+    </View>
+  );
+};
 
 interface AccountRowProps {
   account: Account;
@@ -412,27 +423,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  stepDotActive: {
-    backgroundColor: '#3b82f6',
     width: 14,
     height: 14,
     borderRadius: 7,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   stepLine: {
     width: 56,
     height: 2,
-    backgroundColor: 'rgba(255,255,255,0.15)',
     marginHorizontal: 6,
-  },
-  stepLineActive: {
-    backgroundColor: '#3b82f6',
   },
   scroll: {
     flex: 1,
