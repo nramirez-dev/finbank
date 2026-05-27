@@ -63,7 +63,12 @@ export const AccountSummary = ({
         <View style={styles.balanceHeader}>
           <Text style={styles.balanceLabel}>SALDO TOTAL</Text>
           <Pressable style={styles.balanceRow} onPress={() => setShowBalance((v) => !v)}>
-            <Text style={styles.balanceAmount}>
+            <Text
+              style={styles.balanceAmount}
+              adjustsFontSizeToFit
+              numberOfLines={1}
+              minimumFontScale={0.5}
+            >
               {showBalance ? formatCurrency(totals.dop, 'DOP') : '••••••'}
             </Text>
             <View style={styles.eyeButton}>
@@ -174,6 +179,7 @@ const styles = StyleSheet.create({
     fontSize: 42,
     fontWeight: '700',
     letterSpacing: -1,
+    flex: 1,
   },
   balanceSecondary: {
     color: 'rgba(255, 255, 255, 0.5)',
