@@ -20,9 +20,10 @@ import {
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { useAccounts, useAccountsByOwner } from '@/hooks/useAccounts';
+import { useAccountsByOwner } from '@/hooks/useAccounts';
 import { useTransfer } from '@/hooks/useTransfer';
 import { useAppStore } from '@/store/useAppStore';
+import { useThemeStore } from '@/store/useThemeStore';
 import { transferSchema } from '@/domain/schemas/transferSchema';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useThemeColors } from '@/lib/useThemeColors';
@@ -56,6 +57,7 @@ interface AccountRowProps {
 }
 const AccountRow = ({ account, selected, onPress }: AccountRowProps) => {
   const c = useThemeColors();
+  const isDarkMode = useThemeStore((s) => s.isDarkMode);
   return (
   <Pressable
     onPress={onPress}
@@ -70,8 +72,8 @@ const AccountRow = ({ account, selected, onPress }: AccountRowProps) => {
       <CreditCard size={18} color="#fff" strokeWidth={2} />
     </LinearGradient>
     <View style={styles.accountInfo}>
-      <Text style={styles.accountName}>{account.type} · {account.currency}</Text>
-      <Text style={styles.accountNumber}>**** {account.id.slice(-4)}</Text>
+      <Text style={[styles.accountName, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>{account.type} · {account.currency}</Text>
+      <Text style={[styles.accountNumber, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>**** {account.id.slice(-4)}</Text>
     </View>
     <Text style={[styles.accountBalance, { color: c.text }]}>{formatCurrency(account.balance, account.currency)}</Text>
     {selected && <View style={styles.selectedDot} />}
@@ -83,8 +85,8 @@ export default function TransferScreen() {
   const router = useRouter();
   const { activeProfileId } = useAppStore();
   const c = useThemeColors();
+  const isDarkMode = useThemeStore((s) => s.isDarkMode);
   const { data: ownAccounts = [] } = useAccountsByOwner(activeProfileId);
-  const { data: allAccounts = [] } = useAccounts();
   const transfer = useTransfer();
 
   const [step, setStep] = useState(1);
@@ -95,8 +97,8 @@ export default function TransferScreen() {
   const [step1Error, setStep1Error] = useState('');
   const [step2Error, setStep2Error] = useState('');
 
-  const fromAccount = allAccounts.find((a) => a.id === fromId);
-  const toAccount = allAccounts.find((a) => a.id === toId);
+  const fromAccount = ownAccounts.find((a) => a.id === fromId);
+  const toAccount = ownAccounts.find((a) => a.id === toId);
   const amountNum = parseFloat(amount.replace(',', '.')) || 0;
 
   const handleConfirm = () => {
@@ -131,24 +133,24 @@ export default function TransferScreen() {
         <View style={styles.resultIcon}>
           <CheckCircle size={72} color="#10b981" strokeWidth={1.5} />
         </View>
-        <Text style={styles.resultTitle}>¡Transferencia exitosa!</Text>
-        <Text style={styles.resultSubtitle}>
+        <Text style={[styles.resultTitle, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>¡Transferencia exitosa!</Text>
+        <Text style={[styles.resultSubtitle, { color: isDarkMode ? 'rgba(255,255,255,0.6)' : '#64748B' }]}>
           {formatCurrency(amountNum)} enviado correctamente
         </Text>
-        <View style={styles.resultCard}>
+        <View style={[styles.resultCard, { backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', borderColor: isDarkMode ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }]}>
           <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>De</Text>
-            <Text style={styles.resultValue}>{fromAccount?.type} **** {fromAccount?.id.slice(-4)}</Text>
+            <Text style={[styles.resultLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>De</Text>
+            <Text style={[styles.resultValue, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>{fromAccount?.type} **** {fromAccount?.id.slice(-4)}</Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.07)' : '#E2E8F0' }]} />
           <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>Para</Text>
-            <Text style={styles.resultValue}>{toAccount?.type} **** {toAccount?.id.slice(-4)}</Text>
+            <Text style={[styles.resultLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>Para</Text>
+            <Text style={[styles.resultValue, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>{toAccount?.type} **** {toAccount?.id.slice(-4)}</Text>
           </View>
-          <View style={styles.divider} />
+          <View style={[styles.divider, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.07)' : '#E2E8F0' }]} />
           <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>Descripción</Text>
-            <Text style={styles.resultValue}>{description}</Text>
+            <Text style={[styles.resultLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>Descripción</Text>
+            <Text style={[styles.resultValue, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>{description}</Text>
           </View>
         </View>
         <Pressable style={styles.successBtn} onPress={handleReset}>
@@ -220,7 +222,7 @@ export default function TransferScreen() {
               ))}
 
               <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Cuenta destino</Text>
-              {allAccounts
+              {ownAccounts
                 .filter((a) => a.id !== fromId)
                 .map((a) => (
                   <AccountRow
@@ -232,14 +234,14 @@ export default function TransferScreen() {
                 ))}
 
               <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Monto</Text>
-              <View style={[styles.amountRow, { backgroundColor: c.inputBg, borderColor: c.border }]}>
+              <View style={[styles.amountRow, { backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', borderColor: c.border }]}>
                 <Text style={styles.currencyPrefix}>RD$</Text>
                 <TextInput
-                  style={styles.amountInput}
+                  style={[styles.amountInput, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}
                   value={amount}
                   onChangeText={setAmount}
                   placeholder="0.00"
-                  placeholderTextColor="rgba(255,255,255,0.3)"
+                  placeholderTextColor={isDarkMode ? 'rgba(255,255,255,0.3)' : '#94A3B8'}
                   keyboardType="decimal-pad"
                   selectionColor="#3b82f6"
                 />
@@ -248,7 +250,7 @@ export default function TransferScreen() {
               <View style={styles.quickAmounts}>
                 {QUICK_AMOUNTS.map((v) => (
                   <Pressable key={v} style={styles.quickBtn} onPress={() => setAmount(String(v))}>
-                    <Text style={styles.quickBtnText}>RD${v.toLocaleString()}</Text>
+                    <Text style={[styles.quickBtnText, { color: isDarkMode ? 'rgba(255,255,255,0.6)' : '#64748B' }]}>RD${v.toLocaleString()}</Text>
                   </Pressable>
                 ))}
               </View>
@@ -266,7 +268,7 @@ export default function TransferScreen() {
                 style={{ marginTop: 8, marginBottom: 32 }}
               >
                 <LinearGradient
-                  colors={fromId && toId && amountNum > 0 ? ['#3b82f6', '#2563eb'] : ['#334155', '#334155']}
+                  colors={fromId && toId && amountNum > 0 ? [isDarkMode ? '#1e3a5f' : '#1B4FD8', isDarkMode ? '#1e3a5f' : '#1B4FD8'] : ['#334155', '#334155']}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                   style={styles.nextBtn}
                 >
@@ -281,13 +283,13 @@ export default function TransferScreen() {
           {step === 2 && (
             <>
               <Text style={[styles.sectionTitle, { color: c.text }]}>Descripción</Text>
-              <View style={[styles.descriptionInput, { backgroundColor: c.inputBg, borderColor: c.border }]}>
+              <View style={[styles.descriptionInput, { backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', borderColor: isDarkMode ? 'rgba(255,255,255,0.1)' : '#E2E8F0' }]}>
                 <TextInput
-                  style={styles.descriptionTextInput}
+                  style={[styles.descriptionTextInput, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}
                   value={description}
                   onChangeText={setDescription}
                   placeholder="Ej: Pago de alquiler"
-                  placeholderTextColor="rgba(255,255,255,0.35)"
+                  placeholderTextColor={isDarkMode ? 'rgba(255,255,255,0.35)' : '#94A3B8'}
                   selectionColor="#3b82f6"
                   maxLength={100}
                 />
@@ -305,7 +307,7 @@ export default function TransferScreen() {
                 style={{ marginTop: 16, marginBottom: 32 }}
               >
                 <LinearGradient
-                  colors={description.trim().length >= 3 ? ['#3b82f6', '#2563eb'] : ['#334155', '#334155']}
+                  colors={description.trim().length >= 3 ? [isDarkMode ? '#1e3a5f' : '#1B4FD8', isDarkMode ? '#1e3a5f' : '#1B4FD8'] : ['#334155', '#334155']}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                   style={styles.nextBtn}
                 >
@@ -321,25 +323,25 @@ export default function TransferScreen() {
             <>
               <Text style={[styles.sectionTitle, { color: c.text }]}>Confirmación</Text>
 
-              <View style={[styles.confirmCard, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
+              <View style={[styles.confirmCard, { backgroundColor: isDarkMode ? '#1e293b' : '#F8FAFC', borderColor: isDarkMode ? 'rgba(255,255,255,0.08)' : '#E2E8F0' }]}>
                 <View style={styles.confirmAmountBox}>
-                  <Text style={styles.confirmAmountLabel}>Vas a transferir</Text>
-                  <Text style={styles.confirmAmount}>RD${amountNum.toLocaleString('es-DO', { minimumFractionDigits: 2 })}</Text>
+                  <Text style={[styles.confirmAmountLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>Vas a transferir</Text>
+                  <Text style={[styles.confirmAmount, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>RD${amountNum.toLocaleString('es-DO', { minimumFractionDigits: 2 })}</Text>
                 </View>
 
-                <View style={styles.divider} />
+                <View style={[styles.divider, { backgroundColor: isDarkMode ? 'rgba(255,255,255,0.07)' : '#E2E8F0' }]} />
 
                 <View style={styles.confirmRow}>
-                  <Text style={styles.confirmLabel}>De</Text>
-                  <Text style={styles.confirmValue}>{fromAccount?.type} **** {fromAccount?.id.slice(-4)}</Text>
+                  <Text style={[styles.confirmLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>De</Text>
+                  <Text style={[styles.confirmValue, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>{fromAccount?.type} **** {fromAccount?.id.slice(-4)}</Text>
                 </View>
                 <View style={styles.confirmRow}>
-                  <Text style={styles.confirmLabel}>Para</Text>
-                  <Text style={styles.confirmValue}>{toAccount?.type} **** {toAccount?.id.slice(-4)}</Text>
+                  <Text style={[styles.confirmLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>Para</Text>
+                  <Text style={[styles.confirmValue, { color: isDarkMode ? '#ffffff' : '#0f172a' }]}>{toAccount?.type} **** {toAccount?.id.slice(-4)}</Text>
                 </View>
                 <View style={styles.confirmRow}>
-                  <Text style={styles.confirmLabel}>Descripción</Text>
-                  <Text style={[styles.confirmValue, { flex: 1, textAlign: 'right', marginLeft: 16 }]}>{description}</Text>
+                  <Text style={[styles.confirmLabel, { color: isDarkMode ? 'rgba(255,255,255,0.5)' : '#64748B' }]}>Descripción</Text>
+                  <Text style={[styles.confirmValue, { color: isDarkMode ? '#ffffff' : '#0f172a', flex: 1, textAlign: 'right', marginLeft: 16 }]}>{description}</Text>
                 </View>
               </View>
 

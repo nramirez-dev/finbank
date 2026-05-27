@@ -55,6 +55,7 @@ interface ProfileChipProps {
 
 const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => {
   const c = useThemeColors();
+  const isDarkMode = useThemeStore((s) => s.isDarkMode);
   return (
   <Pressable style={styles.chip} onPress={onPress}>
     <View style={[styles.chipRing, active && styles.chipRingActive]}>
@@ -66,7 +67,7 @@ const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => 
         </View>
       )}
     </View>
-    <Text style={[styles.chipName, { color: c.textSecondary }, active && styles.chipNameActive]} numberOfLines={1}>
+    <Text style={[styles.chipName, { color: active ? (isDarkMode ? '#ffffff' : '#0f172a') : (isDarkMode ? 'rgba(255,255,255,0.5)' : '#94A3B8'), fontWeight: active ? '700' : '500' }]} numberOfLines={1}>
       {name.split(' ')[0]}
     </Text>
     {active && <View style={styles.chipActiveDot} />}
@@ -479,7 +480,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   chipRingActive: {
-    borderColor: '#3b82f6',
+    borderColor: '#1B4FD8',
     borderWidth: 3,
   },
   chipAvatar: {
