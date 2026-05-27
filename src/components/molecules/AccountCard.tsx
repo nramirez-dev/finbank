@@ -12,7 +12,7 @@ interface AccountCardProps {
 }
 
 const GRADIENTS: Record<Account['type'], string[]> = {
-  corriente: ['#0ea5e9', '#0284c7', '#0369a1'],
+  corriente: ['#3b82f6', '#2563eb', '#1d4ed8'],
   ahorros:   ['#10b981', '#059669', '#047857'],
 };
 

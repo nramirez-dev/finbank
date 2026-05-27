@@ -11,6 +11,7 @@ import { useAppStore } from '@/store/useAppStore';
 import { Skeleton, SkeletonRow } from '@/components/atoms/Skeleton';
 import { AccountSummary } from '@/components/organisms/AccountSummary';
 import { BalanceChart } from '@/components/organisms/BalanceChart';
+import { QuickActions } from '@/components/organisms/QuickActions';
 import { TransactionCard } from '@/components/molecules/TransactionCard';
 import { ErrorState } from '@/components/organisms/ErrorState';
 import { EmptyState } from '@/components/organisms/EmptyState';
@@ -119,6 +120,7 @@ export default function HomeScreen() {
                 </Pressable>
                 <Pressable style={styles.iconButton}>
                   <Bell size={20} color="#fff" />
+                  <View style={styles.notificationDot} />
                 </Pressable>
               </View>
             </View>
@@ -138,6 +140,9 @@ export default function HomeScreen() {
             />
           )}
         </View>
+
+        {/* ── Quick actions ── */}
+        <QuickActions />
 
         {/* ── Balance chart ── */}
         {!txError && (
@@ -237,6 +242,18 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.08)',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#3b82f6',
+    borderWidth: 2,
+    borderColor: '#0f172a',
   },
   section: {
     marginBottom: 24,
