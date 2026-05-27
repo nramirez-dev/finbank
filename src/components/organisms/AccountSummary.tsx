@@ -88,24 +88,24 @@ export const AccountSummary = ({
 
         <View style={styles.statsRow}>
           <View style={styles.statItem}>
-            <View style={[styles.statIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
-              <TrendingUp size={16} color="#10b981" />
+            <View style={[styles.statIcon, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
+              <TrendingUp size={16} color="#ffffff" />
             </View>
             <View>
               <Text style={styles.statLabel}>Cuentas</Text>
-              <Text style={[styles.statValue, { color: '#10b981' }]}>
+              <Text style={styles.statValue}>
                 {accountCount} activa{accountCount !== 1 ? 's' : ''}
               </Text>
             </View>
           </View>
 
           <View style={styles.statItem}>
-            <View style={[styles.statIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <Wallet size={16} color="#3b82f6" />
+            <View style={[styles.statIcon, { backgroundColor: 'rgba(255,255,255,0.15)' }]}>
+              <Wallet size={16} color="#ffffff" />
             </View>
             <View>
               <Text style={styles.statLabel}>Monedas</Text>
-              <Text style={[styles.statValue, { color: '#3b82f6' }]}>
+              <Text style={styles.statValue}>
                 {totals.usd > 0 ? 'DOP · USD' : 'DOP'}
               </Text>
             </View>
@@ -209,11 +209,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statLabel: {
-    color: 'rgba(255, 255, 255, 0.42)',
+    color: 'rgba(255,255,255,0.6)',
     fontSize: 11,
     marginBottom: 2,
   },
   statValue: {
+    color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
   },
