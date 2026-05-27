@@ -100,12 +100,12 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   description: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 15,
     fontWeight: '600',
   },
   date: {
-    color: 'rgba(255, 255, 255, 0.42)',
+    color: 'rgba(255, 255, 255, 0.5)',
     fontSize: 12,
   },
   amount: {

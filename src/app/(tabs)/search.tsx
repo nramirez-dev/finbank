@@ -183,6 +183,7 @@ export default function SearchScreen() {
         <FlatList
           data={paginatedData}
           keyExtractor={(item) => item.id}
+          style={styles.flatList}
           renderItem={({ item }) => (
             <TransactionCard transaction={item} onPress={() => handlePressTx(item)} />
           )}
@@ -242,9 +243,13 @@ const styles = StyleSheet.create({
   controls: {
     gap: 12,
     paddingBottom: 8,
+    backgroundColor: '#0f172a',
   },
   chipsRow: {
-    // FilterChip handles its own horizontal padding
+    backgroundColor: '#0f172a',
+  },
+  flatList: {
+    backgroundColor: '#0f172a',
   },
   metaRow: {
     flexDirection: 'row',
@@ -301,6 +306,7 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingBottom: 120,
+    backgroundColor: '#0f172a',
   },
   loadMoreWrapper: {
     paddingVertical: 12,
