@@ -42,6 +42,7 @@ export const AmountInput = ({ value, currency = 'DOP', onChangeValue, label }: A
         <TextInput
           value={text}
           onChangeText={handleChange}
+          accessibilityLabel={label ?? 'Monto'}
           keyboardType="numeric"
           placeholder="0.00"
           placeholderTextColor="#94a3b8"
