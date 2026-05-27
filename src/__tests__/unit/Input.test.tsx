@@ -29,4 +29,21 @@ describe('Input', () => {
     fireEvent.changeText(getByPlaceholderText('Email'), 'test@example.com');
     expect(onChangeText).toHaveBeenCalledWith('test@example.com');
   });
+
+  it('handles focus and blur events', () => {
+    const { getByPlaceholderText } = render(
+      <Input value="" onChangeText={() => undefined} placeholder="Campo" />
+    );
+    const input = getByPlaceholderText('Campo');
+    // covers onFocus (line 76) and onBlur (line 77)
+    fireEvent(input, 'focus');
+    fireEvent(input, 'blur');
+  });
+
+  it('renders without label using placeholder only', () => {
+    const { getByPlaceholderText } = render(
+      <Input value="hello" onChangeText={() => undefined} placeholder="Sin label" />
+    );
+    expect(getByPlaceholderText('Sin label')).toBeTruthy();
+  });
 });

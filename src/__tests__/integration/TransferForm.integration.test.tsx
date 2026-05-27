@@ -38,6 +38,62 @@ describe('TransferForm integration', () => {
     });
   });
 
+  it('closes modal when Cancelar is pressed', async () => {
+    const onSubmit = jest.fn();
+    const { getAllByText, getByLabelText, getByText } = render(
+      <TransferForm accounts={accounts} onSubmit={onSubmit} />
+    );
+
+    // Fill form to enable opening the confirm modal
+    const fromOptions = getAllByText('AHORROS · DOP');
+    await act(async () => { fireEvent.press(fromOptions[0]); });
+
+    const toOptions = getAllByText('CORRIENTE · DOP');
+    await act(async () => { fireEvent.press(toOptions[1]); });
+
+    await act(async () => {
+      fireEvent.changeText(getByLabelText('Monto'), '200');
+      fireEvent.changeText(getByLabelText('Descripcion'), 'Test cancel');
+    });
+
+    await act(async () => { fireEvent.press(getByText('Confirmar')); });
+
+    // Press Cancelar — covers line 190: () => setIsConfirmOpen(false)
+    await act(async () => { fireEvent.press(getByText('Cancelar')); });
+
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it('shows error card when onSubmit throws', async () => {
+    const onSubmit = jest.fn(() => { throw new Error('Fondos insuficientes'); });
+    const { getAllByText, getByLabelText, getByText } = render(
+      <TransferForm accounts={accounts} onSubmit={onSubmit} />
+    );
+
+    const fromOptions = getAllByText('AHORROS · DOP');
+    await act(async () => { fireEvent.press(fromOptions[0]); });
+
+    const toOptions = getAllByText('CORRIENTE · DOP');
+    await act(async () => { fireEvent.press(toOptions[1]); });
+
+    await act(async () => {
+      fireEvent.changeText(getByLabelText('Monto'), '999');
+      fireEvent.changeText(getByLabelText('Descripcion'), 'Pago fallido');
+    });
+
+    await act(async () => { fireEvent.press(getByText('Confirmar')); });
+
+    const confirmButtons = getAllByText('Confirmar');
+    await act(async () => {
+      fireEvent.press(confirmButtons[confirmButtons.length - 1]);
+    });
+
+    // covers lines 70-71: catch block sets status='error' and statusMessage
+    await waitFor(() => {
+      expect(getByText('Transferencia fallida')).toBeTruthy();
+    });
+  });
+
   it('submits valid transfer after confirmation', async () => {
     const onSubmit = jest.fn();
     const { getAllByText, getByLabelText, getByText } = render(

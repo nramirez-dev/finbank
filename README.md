@@ -16,7 +16,12 @@
 
 ## 📱 Capturas de pantalla
 
-<!-- Add screenshots here -->
+| Modo Oscuro | Modo Claro |
+|---|---|
+| ![Home Dark](assets/screenshots/home-dark.jpeg) | ![Home Light](assets/screenshots/home-light.jpeg) |
+| ![Profile Dark](assets/screenshots/profile-dark.jpeg) | ![Profile Light](assets/screenshots/profile-light.jpeg) |
+| ![Search Dark](assets/screenshots/search-dark.jpeg) | ![Search Light](assets/screenshots/search-light.jpeg) |
+| ![Transfer Dark](assets/screenshots/transfer-dark.jpeg) | ![Transfer Light](assets/screenshots/transfer-light.jpeg) |
 
 ---
 
@@ -115,6 +120,16 @@ src/
 - 👁️ **Ocultar saldo** — toggle para mostrar/ocultar el balance total en la pantalla de inicio
 - 📊 **Gráfico de balance** — visualización de ingresos vs gastos de los últimos 6 meses
 - ✅ **Transferencias con validación** — flujo de 3 pasos con validación Zod y estados de éxito/error
+
+---
+
+## 🎁 Bonus implementados
+
+| Bonus | Implementación |
+|---|---|
+| 🌙 **Modo oscuro** | Toggle en pantalla de Perfil, persiste entre sesiones con Zustand + AsyncStorage |
+| ⚛️ **Atomic Design** | Estructura de componentes: atoms → molecules → organisms → templates |
+| 🚀 **Estrategia de caching** | React Query con staleTime de 5 minutos, retry: 1, revalidación automática en foco |
 
 ---
 

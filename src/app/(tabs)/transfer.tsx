@@ -27,6 +27,9 @@ import { useThemeStore } from '@/store/useThemeStore';
 import { transferSchema } from '@/domain/schemas/transferSchema';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { useThemeColors } from '@/lib/useThemeColors';
+import { Skeleton } from '@/components/atoms/Skeleton';
+import { ErrorState } from '@/components/organisms/ErrorState';
+import { EmptyState } from '@/components/organisms/EmptyState';
 import type { Account } from '@/domain/entities/Account';
 
 const QUICK_AMOUNTS = [500, 1000, 2500, 5000];
@@ -57,6 +60,26 @@ const StepIndicator = ({ step }: StepIndicatorProps) => {
           </View>
         );
       })}
+    </View>
+  );
+};
+
+const TransferSkeleton = () => {
+  const c = useThemeColors();
+  return (
+    <View style={[styles.root, { backgroundColor: c.bg }]}>
+      <View style={styles.skeletonHeader}>
+        <Skeleton width={140} height={18} borderRadius={8} />
+      </View>
+      <View style={styles.skeletonSection}>
+        <Skeleton width={120} height={14} borderRadius={6} />
+        <Skeleton height={70} borderRadius={18} />
+        <Skeleton height={70} borderRadius={18} />
+      </View>
+      <View style={styles.skeletonSection}>
+        <Skeleton width={120} height={14} borderRadius={6} />
+        <Skeleton height={70} borderRadius={18} />
+      </View>
     </View>
   );
 };
@@ -97,7 +120,12 @@ export default function TransferScreen() {
   const { activeProfileId } = useAppStore();
   const c = useThemeColors();
   const isDarkMode = useThemeStore((s) => s.isDarkMode);
-  const { data: ownAccounts = [] } = useAccountsByOwner(activeProfileId);
+  const {
+    data: ownAccounts = [],
+    isLoading: accountsLoading,
+    isError: accountsError,
+    refetch: refetchAccounts,
+  } = useAccountsByOwner(activeProfileId);
   const transfer = useTransfer();
 
   const [step, setStep] = useState(1);
@@ -111,6 +139,22 @@ export default function TransferScreen() {
   const fromAccount = ownAccounts.find((a) => a.id === fromId);
   const toAccount = ownAccounts.find((a) => a.id === toId);
   const amountNum = parseFloat(amount.replace(',', '.')) || 0;
+
+  if (accountsLoading) return <TransferSkeleton />;
+  if (accountsError) {
+    return (
+      <View style={[styles.root, { backgroundColor: c.bg, justifyContent: 'center' }]}>
+        <ErrorState message="Error al cargar cuentas" onRetry={refetchAccounts} />
+      </View>
+    );
+  }
+  if (!ownAccounts.length) {
+    return (
+      <View style={[styles.root, { backgroundColor: c.bg, justifyContent: 'center' }]}>
+        <EmptyState message="No hay cuentas disponibles" />
+      </View>
+    );
+  }
 
   const handleConfirm = () => {
     const result = transferSchema.safeParse({
@@ -387,6 +431,16 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: '#0f172a',
+  },
+  skeletonHeader: {
+    paddingTop: 56,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
+  skeletonSection: {
+    paddingHorizontal: 20,
+    gap: 12,
+    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',

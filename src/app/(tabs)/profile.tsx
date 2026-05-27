@@ -33,6 +33,7 @@ import { useThemeStore } from '@/store/useThemeStore';
 import { useThemeColors } from '@/lib/useThemeColors';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import { ErrorState } from '@/components/organisms/ErrorState';
 import type { Account } from '@/domain/entities/Account';
 
 const ACCOUNT_GRADIENTS: Record<Account['type'], [string, string]> = {
@@ -54,7 +55,6 @@ interface ProfileChipProps {
 }
 
 const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => {
-  const c = useThemeColors();
   const isDarkMode = useThemeStore((s) => s.isDarkMode);
   return (
   <Pressable style={styles.chip} onPress={onPress}>
@@ -111,9 +111,19 @@ export default function ProfileScreen() {
   const c = useThemeColors();
   const [notifications, setNotifications] = useState(true);
 
-  const { data: profile, isLoading: profileLoading } = useProfile();
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileError,
+    refetch: refetchProfile,
+  } = useProfile();
   const { data: profiles = [] } = useProfiles();
-  const { data: accounts = [], isLoading: accountsLoading } = useAccountsByOwner(activeProfileId);
+  const {
+    data: accounts = [],
+    isLoading: accountsLoading,
+    isError: accountsError,
+    refetch: refetchAccounts,
+  } = useAccountsByOwner(activeProfileId);
 
   const handleLogout = () => {
     Alert.alert(
@@ -151,6 +161,8 @@ export default function ProfileScreen() {
               <Skeleton width={150} height={22} borderRadius={8} />
               <Skeleton width={190} height={14} borderRadius={6} />
             </View>
+          ) : profileError ? (
+            <ErrorState message="Error al cargar perfil" onRetry={refetchProfile} />
           ) : (
             <>
               {profile?.avatar ? (
@@ -208,6 +220,8 @@ export default function ProfileScreen() {
                 <Skeleton width={80} height={14} borderRadius={4} />
               </View>
             ))
+          ) : accountsError ? (
+            <ErrorState message="Error al cargar cuentas" onRetry={refetchAccounts} />
           ) : accounts.length === 0 ? (
             <View style={[styles.row, styles.rowFirst, styles.rowLast]}>
               <Text style={[styles.emptyText, { color: c.textMuted }]}>Sin cuentas asociadas</Text>
@@ -501,10 +515,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     textAlign: 'center',
-  },
-  chipNameActive: {
-    color: '#ffffff',
-    fontWeight: '700',
   },
   chipActiveDot: {
     width: 6,

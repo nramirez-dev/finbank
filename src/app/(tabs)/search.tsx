@@ -93,7 +93,11 @@ const ExpandedFilters = ({
   };
 
   const applyDate = (iso: string) => {
-    pickerTarget === 'from' ? onChangeDateFrom(iso) : onChangeDateTo(iso);
+    if (pickerTarget === 'from') {
+      onChangeDateFrom(iso);
+    } else {
+      onChangeDateTo(iso);
+    }
   };
 
   const handleChange = (_: unknown, selected?: Date) => {

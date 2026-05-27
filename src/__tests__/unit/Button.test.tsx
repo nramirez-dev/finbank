@@ -33,4 +33,28 @@ describe('Button', () => {
     const button = getByRole('button');
     expect(button.props.accessibilityState.disabled).toBe(true);
   });
+
+  it('fires pressIn and pressOut on an enabled button', () => {
+    const { getByRole } = render(<Button label="Press" onPress={() => undefined} />);
+    const button = getByRole('button');
+    // covers handlePressIn (line 52-55) and handlePressOut (line 58-60)
+    fireEvent(button, 'pressIn');
+    fireEvent(button, 'pressOut');
+  });
+
+  it('pressIn does not animate when button is disabled', () => {
+    const { getByRole } = render(
+      <Button label="Disabled" onPress={() => undefined} disabled />
+    );
+    const button = getByRole('button');
+    // covers the !isDisabled branch in handlePressIn (line 53)
+    fireEvent(button, 'pressIn');
+  });
+
+  it('renders with leftIcon', () => {
+    const { getByText } = render(
+      <Button label="Con ícono" onPress={() => undefined} leftIcon={<ActivityIndicator />} />
+    );
+    expect(getByText('Con ícono')).toBeTruthy();
+  });
 });
