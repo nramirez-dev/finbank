@@ -336,9 +336,9 @@ export default function ProfileScreen() {
         <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border, ...c.cardShadow }]}>
           <Pressable
             onPress={handleLogout}
-            style={[styles.row, styles.rowFirst, styles.rowLast]}
+            style={[styles.row, styles.rowFirst, styles.rowLast, { backgroundColor: isDarkMode ? c.surface : '#FEE2E2' }]}
           >
-            <View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.15)' }]}>
+            <View style={[styles.rowIcon, { backgroundColor: isDarkMode ? 'rgba(239,68,68,0.15)' : '#FECACA' }]}>
               <LogOut size={19} color="#ef4444" strokeWidth={2} />
             </View>
             <Text style={[styles.rowLabel, { color: '#ef4444' }]}>Cerrar sesión</Text>
