@@ -1,5 +1,14 @@
 import { useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Bell,
@@ -13,6 +22,8 @@ import {
   Moon,
   Shield,
   Smartphone,
+  Sun,
+  User,
 } from 'lucide-react-native';
 
 import { useProfile, useProfiles } from '@/hooks/useProfile';
@@ -25,9 +36,63 @@ import type { Account } from '@/domain/entities/Account';
 
 const ACCOUNT_GRADIENTS: Record<Account['type'], [string, string]> = {
   corriente: ['#3b82f6', '#1d4ed8'],
-  ahorros:   ['#10b981', '#047857'],
+  ahorros: ['#10b981', '#047857'],
 };
 
+const TYPE_LABELS: Record<Account['type'], string> = {
+  corriente: 'Cuenta Corriente',
+  ahorros: 'Caja de Ahorros',
+};
+
+// ─── Profile avatar chip ──────────────────────────────────────────────────────
+interface ProfileChipProps {
+  name: string;
+  avatarUrl?: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => (
+  <Pressable style={styles.chip} onPress={onPress}>
+    <View style={[styles.chipRing, active && styles.chipRingActive]}>
+      {avatarUrl ? (
+        <Image source={{ uri: avatarUrl }} style={styles.chipAvatar} />
+      ) : (
+        <View style={styles.chipAvatarFallback}>
+          <User size={22} color="#3b82f6" strokeWidth={2} />
+        </View>
+      )}
+    </View>
+    <Text style={[styles.chipName, active && styles.chipNameActive]} numberOfLines={1}>
+      {name.split(' ')[0]}
+    </Text>
+    {active && <View style={styles.chipActiveDot} />}
+  </Pressable>
+);
+
+// ─── Setting row ──────────────────────────────────────────────────────────────
+interface SettingRowProps {
+  icon: React.ReactNode;
+  label: string;
+  right?: React.ReactNode;
+  onPress?: () => void;
+  isFirst?: boolean;
+  isLast?: boolean;
+}
+
+const SettingRow = ({ icon, label, right, onPress, isFirst, isLast }: SettingRowProps) => {
+  const Inner = (
+    <View style={[styles.row, !isLast && styles.rowBorder, isFirst && styles.rowFirst, isLast && styles.rowLast]}>
+      {icon}
+      <Text style={styles.rowLabel}>{label}</Text>
+      <View style={styles.rowRight}>{right}</View>
+    </View>
+  );
+
+  return onPress ? <Pressable onPress={onPress}>{Inner}</Pressable> : Inner;
+};
+
+// ─── Main screen ──────────────────────────────────────────────────────────────
 export default function ProfileScreen() {
   const { activeProfileId, setActiveProfile } = useAppStore();
   const { isDarkMode, toggleDarkMode } = useThemeStore();
@@ -52,198 +117,221 @@ export default function ProfileScreen() {
     <ScrollView
       style={styles.root}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 120 }}
+      contentContainerStyle={styles.scrollContent}
     >
-      {/* ── Header ── */}
+      {/* ── Page title ── */}
       <View style={styles.pageHeader}>
         <Text style={styles.pageTitle}>Perfil</Text>
       </View>
 
-      {/* ── Profile card ── */}
-      <View style={styles.sectionPadded}>
+      {/* ── Profile hero card ── */}
+      <View style={styles.heroPadding}>
         <LinearGradient
           colors={['#1e293b', '#0f172a']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
-          style={styles.profileGradient}
+          style={styles.heroCard}
         >
           {profileLoading ? (
-            <View style={{ alignItems: 'center', gap: 12 }}>
+            <View style={styles.heroSkeleton}>
               <Skeleton width={100} height={100} borderRadius={50} />
-              <Skeleton width={140} height={20} borderRadius={8} />
-              <Skeleton width={180} height={14} borderRadius={6} />
+              <Skeleton width={150} height={22} borderRadius={8} />
+              <Skeleton width={190} height={14} borderRadius={6} />
             </View>
           ) : (
             <>
               {profile?.avatar ? (
-                <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+                <Image source={{ uri: profile.avatar }} style={styles.heroAvatar} />
               ) : (
-                <View style={styles.avatarFallback}>
-                  <Text style={styles.avatarLetter}>{profile?.name?.[0] ?? 'U'}</Text>
+                <View style={styles.heroAvatarFallback}>
+                  <Text style={styles.heroAvatarLetter}>{profile?.name?.[0] ?? 'U'}</Text>
                 </View>
               )}
-              <Text style={styles.profileName}>{profile?.name ?? '—'}</Text>
-              <Text style={styles.profileEmail}>{profile?.email ?? '—'}</Text>
+              <Text style={styles.heroName}>{profile?.name ?? '—'}</Text>
+              <Text style={styles.heroEmail}>{profile?.email ?? '—'}</Text>
               <View style={styles.verifiedBadge}>
                 <Shield size={12} color="#10b981" strokeWidth={2} />
-                <Text style={styles.verifiedText}>Verificado</Text>
+                <Text style={styles.verifiedText}>Cuenta verificada</Text>
               </View>
             </>
           )}
         </LinearGradient>
       </View>
 
-      {/* ── Profile switcher ── */}
+      {/* ── Profile selector (horizontal chips) ── */}
       {profiles.length > 1 && (
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Cambiar perfil</Text>
-          {profiles.map((p) => (
-            <Pressable
-              key={p.id}
-              style={[styles.settingItem, p.id === activeProfileId && styles.settingItemActive]}
-              onPress={() => setActiveProfile(p.id)}
-            >
-              <View style={[styles.settingIcon, { backgroundColor: 'rgba(59,130,246,0.12)' }]}>
-                <Text style={styles.profileInitial}>{p.name[0]}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.settingLabel}>{p.name}</Text>
-                <Text style={styles.settingSubLabel}>{p.email}</Text>
-              </View>
-              {p.id === activeProfileId && (
-                <View style={styles.activeDot} />
-              )}
-            </Pressable>
-          ))}
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chipsRow}
+          >
+            {profiles.map((p) => (
+              <ProfileChip
+                key={p.id}
+                name={p.name}
+                avatarUrl={p.avatar}
+                active={p.id === activeProfileId}
+                onPress={() => setActiveProfile(p.id)}
+              />
+            ))}
+          </ScrollView>
         </View>
       )}
 
-      {/* ── Accounts ── */}
+      {/* ── Mis Cuentas ── */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Mis Cuentas</Text>
-        {accountsLoading ? (
-          [1, 2].map((i) => <Skeleton key={i} height={72} borderRadius={16} style={styles.skeletonAccount} />)
-        ) : accounts.length === 0 ? (
-          <Text style={styles.emptyText}>Sin cuentas asociadas</Text>
-        ) : (
-          accounts.map((account) => (
-            <View key={account.id} style={styles.accountItem}>
-              <LinearGradient
-                colors={ACCOUNT_GRADIENTS[account.type]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.accountMiniCard}
-              >
-                <CreditCard size={20} color="#fff" strokeWidth={2} />
-              </LinearGradient>
-              <View style={styles.accountInfo}>
-                <Text style={styles.accountName}>{account.type} · {account.currency}</Text>
-                <Text style={styles.accountNumber}>**** {account.id.slice(-4)}</Text>
+        <View style={styles.card}>
+          {accountsLoading ? (
+            [0, 1].map((i) => (
+              <View key={i} style={[styles.row, i === 0 && styles.rowFirst, styles.rowBorder]}>
+                <Skeleton width={44} height={44} borderRadius={12} />
+                <View style={{ flex: 1, marginLeft: 12, gap: 6 }}>
+                  <Skeleton width={120} height={14} borderRadius={4} />
+                  <Skeleton width={80} height={11} borderRadius={4} />
+                </View>
+                <Skeleton width={80} height={14} borderRadius={4} />
               </View>
-              <Text style={styles.accountBalance}>
-                {formatCurrency(account.balance, account.currency)}
-              </Text>
+            ))
+          ) : accounts.length === 0 ? (
+            <View style={[styles.row, styles.rowFirst, styles.rowLast]}>
+              <Text style={styles.emptyText}>Sin cuentas asociadas</Text>
             </View>
-          ))
-        )}
+          ) : (
+            accounts.map((account, idx) => (
+              <View
+                key={account.id}
+                style={[
+                  styles.row,
+                  idx === 0 && styles.rowFirst,
+                  idx === accounts.length - 1 ? styles.rowLast : styles.rowBorder,
+                ]}
+              >
+                <LinearGradient
+                  colors={ACCOUNT_GRADIENTS[account.type]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.accountIcon}
+                >
+                  <CreditCard size={20} color="#fff" strokeWidth={2} />
+                </LinearGradient>
+                <View style={styles.accountInfo}>
+                  <Text style={styles.accountName}>{TYPE_LABELS[account.type]}</Text>
+                  <Text style={styles.accountNumber}>**** {account.id.slice(-4)}</Text>
+                </View>
+                <Text style={styles.accountBalance}>
+                  {formatCurrency(account.balance, account.currency)}
+                </Text>
+              </View>
+            ))
+          )}
+        </View>
       </View>
 
-      {/* ── Preferences ── */}
+      {/* ── Configuración ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Preferencias</Text>
-
-        <View style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(59,130,246,0.12)' }]}>
-            <Moon size={20} color="#3b82f6" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Modo oscuro</Text>
-          <Switch
-            value={isDarkMode}
-            onValueChange={toggleDarkMode}
-            trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#3b82f6' }}
-            thumbColor="#fff"
+        <Text style={styles.sectionTitle}>Configuración</Text>
+        <View style={styles.card}>
+          <SettingRow
+            isFirst
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(59,130,246,0.15)' }]}>{isDarkMode ? <Moon size={19} color="#3b82f6" strokeWidth={2} /> : <Sun size={19} color="#3b82f6" strokeWidth={2} />}</View>}
+            label="Modo oscuro"
+            right={
+              <Switch
+                value={isDarkMode}
+                onValueChange={toggleDarkMode}
+                trackColor={{ false: 'rgba(255,255,255,0.12)', true: '#3b82f6' }}
+                thumbColor="#fff"
+              />
+            }
+          />
+          <SettingRow
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(245,158,11,0.15)' }]}><Bell size={19} color="#f59e0b" strokeWidth={2} /></View>}
+            label="Notificaciones"
+            right={
+              <Switch
+                value={notifications}
+                onValueChange={setNotifications}
+                trackColor={{ false: 'rgba(255,255,255,0.12)', true: '#3b82f6' }}
+                thumbColor="#fff"
+              />
+            }
+          />
+          <SettingRow
+            onPress={() => {}}
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(16,185,129,0.15)' }]}><Globe size={19} color="#10b981" strokeWidth={2} /></View>}
+            label="Idioma"
+            right={<><Text style={styles.rowValueText}>Español</Text><ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} /></>}
+          />
+          <SettingRow
+            isLast
+            onPress={() => {}}
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(236,72,153,0.15)' }]}><Smartphone size={19} color="#ec4899" strokeWidth={2} /></View>}
+            label="Dispositivos"
+            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
           />
         </View>
-
-        <View style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(245,158,11,0.12)' }]}>
-            <Bell size={20} color="#f59e0b" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Notificaciones</Text>
-          <Switch
-            value={notifications}
-            onValueChange={setNotifications}
-            trackColor={{ false: 'rgba(255,255,255,0.1)', true: '#3b82f6' }}
-            thumbColor="#fff"
-          />
-        </View>
-
-        <Pressable style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(16,185,129,0.12)' }]}>
-            <Globe size={20} color="#10b981" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Idioma</Text>
-          <Text style={styles.settingValue}>Español</Text>
-          <ChevronRight size={18} color="rgba(255,255,255,0.25)" strokeWidth={2} />
-        </Pressable>
-
-        <Pressable style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(236,72,153,0.12)' }]}>
-            <Smartphone size={20} color="#ec4899" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Dispositivos</Text>
-          <ChevronRight size={18} color="rgba(255,255,255,0.25)" strokeWidth={2} />
-        </Pressable>
       </View>
 
-      {/* ── Security ── */}
+      {/* ── Seguridad ── */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Seguridad</Text>
-
-        <Pressable style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(239,68,68,0.12)' }]}>
-            <Lock size={20} color="#ef4444" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Cambiar PIN</Text>
-          <ChevronRight size={18} color="rgba(255,255,255,0.25)" strokeWidth={2} />
-        </Pressable>
-
-        <Pressable style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(16,185,129,0.12)' }]}>
-            <Shield size={20} color="#10b981" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Autenticación</Text>
-          <Text style={styles.settingValue}>Biométrico</Text>
-          <ChevronRight size={18} color="rgba(255,255,255,0.25)" strokeWidth={2} />
-        </Pressable>
+        <View style={styles.card}>
+          <SettingRow
+            isFirst
+            onPress={() => {}}
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.15)' }]}><Lock size={19} color="#ef4444" strokeWidth={2} /></View>}
+            label="Cambiar PIN"
+            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+          />
+          <SettingRow
+            isLast
+            onPress={() => {}}
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(16,185,129,0.15)' }]}><Shield size={19} color="#10b981" strokeWidth={2} /></View>}
+            label="Autenticación"
+            right={<><Text style={styles.rowValueText}>Biométrico</Text><ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} /></>}
+          />
+        </View>
       </View>
 
-      {/* ── Support ── */}
+      {/* ── Soporte ── */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Soporte</Text>
-
-        <Pressable style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(59,130,246,0.12)' }]}>
-            <HelpCircle size={20} color="#3b82f6" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Centro de ayuda</Text>
-          <ChevronRight size={18} color="rgba(255,255,255,0.25)" strokeWidth={2} />
-        </Pressable>
-
-        <Pressable style={styles.settingItem}>
-          <View style={[styles.settingIcon, { backgroundColor: 'rgba(245,158,11,0.12)' }]}>
-            <Mail size={20} color="#f59e0b" strokeWidth={2} />
-          </View>
-          <Text style={styles.settingLabel}>Contacto</Text>
-          <ChevronRight size={18} color="rgba(255,255,255,0.25)" strokeWidth={2} />
-        </Pressable>
+        <View style={styles.card}>
+          <SettingRow
+            isFirst
+            onPress={() => {}}
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(59,130,246,0.15)' }]}><HelpCircle size={19} color="#3b82f6" strokeWidth={2} /></View>}
+            label="Centro de ayuda"
+            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+          />
+          <SettingRow
+            isLast
+            onPress={() => {}}
+            icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(245,158,11,0.15)' }]}><Mail size={19} color="#f59e0b" strokeWidth={2} /></View>}
+            label="Contacto"
+            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+          />
+        </View>
       </View>
 
-      {/* ── Logout ── */}
-      <Pressable style={styles.logoutBtn} onPress={handleLogout}>
-        <LogOut size={20} color="#ef4444" strokeWidth={2} />
-        <Text style={styles.logoutText}>Cerrar sesión</Text>
-      </Pressable>
+      {/* ── Sesión ── */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Sesión</Text>
+        <View style={styles.card}>
+          <Pressable
+            onPress={handleLogout}
+            style={[styles.row, styles.rowFirst, styles.rowLast]}
+          >
+            <View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.15)' }]}>
+              <LogOut size={19} color="#ef4444" strokeWidth={2} />
+            </View>
+            <Text style={[styles.rowLabel, { color: '#ef4444' }]}>Cerrar sesión</Text>
+          </Pressable>
+        </View>
+      </View>
 
       {/* ── Footer ── */}
       <View style={styles.footer}>
@@ -259,9 +347,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0f172a',
   },
+  scrollContent: {
+    paddingBottom: 120,
+  },
   pageHeader: {
     paddingTop: 56,
-    paddingBottom: 8,
+    paddingBottom: 4,
     paddingHorizontal: 20,
   },
   pageTitle: {
@@ -269,27 +360,35 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '800',
   },
-  sectionPadded: {
+
+  // ─── Hero card ───────────────────────────────────────────────────────────
+  heroPadding: {
     paddingHorizontal: 20,
-    marginBottom: 24,
-    marginTop: 12,
+    marginTop: 16,
+    marginBottom: 28,
   },
-  profileGradient: {
+  heroCard: {
     borderRadius: 24,
-    padding: 28,
+    paddingVertical: 32,
+    paddingHorizontal: 24,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
+    gap: 6,
   },
-  avatar: {
+  heroSkeleton: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  heroAvatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    marginBottom: 16,
     borderWidth: 3,
     borderColor: '#3b82f6',
+    marginBottom: 10,
   },
-  avatarFallback: {
+  heroAvatarFallback: {
     width: 100,
     height: 100,
     borderRadius: 50,
@@ -298,23 +397,23 @@ const styles = StyleSheet.create({
     borderColor: '#3b82f6',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
-  avatarLetter: {
+  heroAvatarLetter: {
     color: '#3b82f6',
     fontSize: 40,
     fontWeight: '700',
   },
-  profileName: {
+  heroName: {
     color: '#ffffff',
     fontSize: 24,
     fontWeight: '700',
-    marginBottom: 4,
+    marginTop: 4,
   },
-  profileEmail: {
+  heroEmail: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: 14,
-    marginBottom: 14,
+    marginBottom: 8,
   },
   verifiedBadge: {
     flexDirection: 'row',
@@ -322,96 +421,139 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(16,185,129,0.15)',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 12,
+    borderRadius: 20,
     gap: 5,
+    marginTop: 4,
   },
   verifiedText: {
     color: '#10b981',
     fontSize: 12,
     fontWeight: '600',
   },
+
+  // ─── Sections ───────────────────────────────────────────────────────────
   section: {
     paddingHorizontal: 20,
     marginBottom: 24,
   },
   sectionTitle: {
-    color: 'rgba(255,255,255,0.45)',
+    color: 'rgba(255,255,255,0.5)',
     fontSize: 11,
     fontWeight: '700',
     textTransform: 'uppercase',
-    letterSpacing: 1.2,
-    marginBottom: 12,
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    padding: 16,
+    letterSpacing: 1.4,
     marginBottom: 10,
-    gap: 12,
   },
-  settingItemActive: {
+
+  // ─── Profile chips (horizontal) ─────────────────────────────────────────
+  chipsRow: {
+    gap: 20,
+    paddingVertical: 4,
+  },
+  chip: {
+    alignItems: 'center',
+    gap: 6,
+    minWidth: 64,
+  },
+  chipRing: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  chipRingActive: {
     borderColor: '#3b82f6',
-    backgroundColor: 'rgba(59,130,246,0.07)',
+    borderWidth: 3,
   },
-  settingIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+  chipAvatar: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+  },
+  chipAvatarFallback: {
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: 'rgba(59,130,246,0.15)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  settingLabel: {
+  chipName: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 12,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  chipNameActive: {
+    color: '#ffffff',
+    fontWeight: '700',
+  },
+  chipActiveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#3b82f6',
+  },
+
+  // ─── Card container ──────────────────────────────────────────────────────
+  card: {
+    backgroundColor: '#1e293b',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.07)',
+    overflow: 'hidden',
+  },
+
+  // ─── Generic row ────────────────────────────────────────────────────────
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    gap: 14,
+    backgroundColor: '#1e293b',
+  },
+  rowFirst: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+  },
+  rowLast: {
+    borderBottomLeftRadius: 16,
+    borderBottomRightRadius: 16,
+  },
+  rowBorder: {
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.08)',
+  },
+  rowIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rowLabel: {
     flex: 1,
     color: '#ffffff',
     fontSize: 15,
     fontWeight: '500',
   },
-  settingSubLabel: {
-    color: 'rgba(255,255,255,0.4)',
-    fontSize: 12,
-    marginTop: 2,
-  },
-  settingValue: {
-    color: 'rgba(255,255,255,0.45)',
-    fontSize: 14,
-    marginRight: 6,
-  },
-  profileInitial: {
-    color: '#3b82f6',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  activeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#3b82f6',
-  },
-  skeletonAccount: {
-    marginBottom: 10,
-  },
-  emptyText: {
-    color: 'rgba(255,255,255,0.3)',
-    fontSize: 14,
-    textAlign: 'center',
-    paddingVertical: 12,
-  },
-  accountItem: {
+  rowRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.04)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.06)',
-    padding: 16,
-    marginBottom: 10,
-    gap: 12,
+    gap: 4,
   },
-  accountMiniCard: {
+  rowValueText: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 14,
+  },
+
+  // ─── Account rows ────────────────────────────────────────────────────────
+  accountIcon: {
     width: 44,
     height: 44,
     borderRadius: 12,
@@ -425,7 +567,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 15,
     fontWeight: '600',
-    textTransform: 'capitalize',
     marginBottom: 3,
   },
   accountNumber: {
@@ -438,24 +579,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
-  logoutBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 20,
-    backgroundColor: 'rgba(239,68,68,0.1)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(239,68,68,0.2)',
-    padding: 16,
-    marginBottom: 24,
-    gap: 8,
+
+  emptyText: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 14,
+    textAlign: 'center',
+    flex: 1,
+    paddingVertical: 4,
   },
-  logoutText: {
-    color: '#ef4444',
-    fontSize: 16,
-    fontWeight: '700',
-  },
+
+  // ─── Footer ─────────────────────────────────────────────────────────────
   footer: {
     alignItems: 'center',
     paddingHorizontal: 20,
