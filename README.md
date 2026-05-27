@@ -61,8 +61,6 @@ Escanea el código QR con Expo Go para abrir la app en tu dispositivo.
 | `npm run typecheck` | Verifica errores de TypeScript |
 | `npm run lint` | Analiza el código con ESLint |
 | `npx expo start --web` | Abre la versión web en el navegador |
-| `npx expo start --android` | Abre en emulador Android |
-| `npx expo start --ios` | Abre en simulador iOS |
 
 ---
 

@@ -1,4 +1,5 @@
 // Manual mock for react-native-reanimated v4 (Jest environment)
+/* eslint-disable no-unused-vars */
 const React = require('react');
 const { View, Text, Image, ScrollView, FlatList } = require('react-native');
 

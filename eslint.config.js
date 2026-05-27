@@ -26,6 +26,14 @@ module.exports = defineConfig([
     },
   },
   {
+    files: ['__mocks__/**/*.js'],
+    languageOptions: {
+      globals: {
+        jest: true,
+      },
+    },
+  },
+  {
     ignores: ['node_modules/', 'dist/', '.expo/'],
   },
 ]);
