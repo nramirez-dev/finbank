@@ -25,6 +25,7 @@ import { useTransfer } from '@/hooks/useTransfer';
 import { useAppStore } from '@/store/useAppStore';
 import { transferSchema } from '@/domain/schemas/transferSchema';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useThemeColors } from '@/lib/useThemeColors';
 import type { Account } from '@/domain/entities/Account';
 
 const QUICK_AMOUNTS = [500, 1000, 2500, 5000];
@@ -53,10 +54,12 @@ interface AccountRowProps {
   selected: boolean;
   onPress: () => void;
 }
-const AccountRow = ({ account, selected, onPress }: AccountRowProps) => (
+const AccountRow = ({ account, selected, onPress }: AccountRowProps) => {
+  const c = useThemeColors();
+  return (
   <Pressable
     onPress={onPress}
-    style={[styles.accountRow, selected && styles.accountRowSelected]}
+    style={[styles.accountRow, { backgroundColor: c.surfaceAlt, borderColor: c.border }, selected && styles.accountRowSelected]}
   >
     <LinearGradient
       colors={ACCOUNT_GRADIENTS[account.type]}
@@ -70,14 +73,16 @@ const AccountRow = ({ account, selected, onPress }: AccountRowProps) => (
       <Text style={styles.accountName}>{account.type} · {account.currency}</Text>
       <Text style={styles.accountNumber}>**** {account.id.slice(-4)}</Text>
     </View>
-    <Text style={styles.accountBalance}>{formatCurrency(account.balance, account.currency)}</Text>
+    <Text style={[styles.accountBalance, { color: c.text }]}>{formatCurrency(account.balance, account.currency)}</Text>
     {selected && <View style={styles.selectedDot} />}
   </Pressable>
-);
+  );
+};
 
 export default function TransferScreen() {
   const router = useRouter();
   const { activeProfileId } = useAppStore();
+  const c = useThemeColors();
   const { data: ownAccounts = [] } = useAccountsByOwner(activeProfileId);
   const { data: allAccounts = [] } = useAccounts();
   const transfer = useTransfer();
@@ -122,7 +127,7 @@ export default function TransferScreen() {
   // ── Success screen ───────────────────────────────────────────────────────
   if (step === 4) {
     return (
-      <View style={styles.resultScreen}>
+      <View style={[styles.resultScreen, { backgroundColor: c.bg }]}>
         <View style={styles.resultIcon}>
           <CheckCircle size={72} color="#10b981" strokeWidth={1.5} />
         </View>
@@ -159,7 +164,7 @@ export default function TransferScreen() {
   // ── Error screen ─────────────────────────────────────────────────────────
   if (step === 5) {
     return (
-      <View style={styles.resultScreen}>
+      <View style={[styles.resultScreen, { backgroundColor: c.bg }]}>
         <View style={styles.resultIcon}>
           <XCircle size={72} color="#ef4444" strokeWidth={1.5} />
         </View>
@@ -176,17 +181,17 @@ export default function TransferScreen() {
   }
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.bg }]}>
       {/* Header */}
       <View style={styles.header}>
         <Pressable
-          style={styles.backBtn}
+          style={[styles.backBtn, { backgroundColor: c.iconBtn, borderColor: c.border }]}
           onPress={step === 1 ? () => router.back() : () => setStep((s) => s - 1)}
         >
           <ArrowLeft size={22} color="#fff" strokeWidth={2} />
         </Pressable>
-        <Text style={styles.headerTitle}>Transferir</Text>
-        <View style={styles.backBtn} />
+        <Text style={[styles.headerTitle, { color: c.text }]}>Transferir</Text>
+        <View style={[styles.backBtn, { backgroundColor: c.iconBtn, borderColor: c.border }]} />
       </View>
 
       <StepIndicator step={step} />
@@ -204,7 +209,7 @@ export default function TransferScreen() {
           {/* ── Step 1: From account + amount ── */}
           {step === 1 && (
             <>
-              <Text style={styles.sectionTitle}>Cuenta origen</Text>
+              <Text style={[styles.sectionTitle, { color: c.text }]}>Cuenta origen</Text>
               {ownAccounts.map((a) => (
                 <AccountRow
                   key={a.id}
@@ -214,8 +219,8 @@ export default function TransferScreen() {
                 />
               ))}
 
-              <Text style={[styles.sectionTitle, { marginTop: 28 }]}>Monto</Text>
-              <View style={styles.amountRow}>
+              <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Monto</Text>
+              <View style={[styles.amountRow, { backgroundColor: c.inputBg, borderColor: c.border }]}>
                 <Text style={styles.currencyPrefix}>RD$</Text>
                 <TextInput
                   style={styles.amountInput}
@@ -262,7 +267,7 @@ export default function TransferScreen() {
           {/* ── Step 2: To account + description ── */}
           {step === 2 && (
             <>
-              <Text style={styles.sectionTitle}>Cuenta destino</Text>
+              <Text style={[styles.sectionTitle, { color: c.text }]}>Cuenta destino</Text>
               {allAccounts
                 .filter((a) => a.id !== fromId)
                 .map((a) => (
@@ -274,8 +279,8 @@ export default function TransferScreen() {
                   />
                 ))}
 
-              <Text style={[styles.sectionTitle, { marginTop: 28 }]}>Descripción</Text>
-              <View style={styles.descriptionInput}>
+              <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Descripción</Text>
+              <View style={[styles.descriptionInput, { backgroundColor: c.inputBg, borderColor: c.border }]}>
                 <TextInput
                   style={styles.descriptionTextInput}
                   value={description}
@@ -314,9 +319,9 @@ export default function TransferScreen() {
           {/* ── Step 3: Confirmation ── */}
           {step === 3 && (
             <>
-              <Text style={styles.sectionTitle}>Confirmación</Text>
+              <Text style={[styles.sectionTitle, { color: c.text }]}>Confirmación</Text>
 
-              <View style={styles.confirmCard}>
+              <View style={[styles.confirmCard, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
                 <View style={styles.confirmAmountBox}>
                   <Text style={styles.confirmAmountLabel}>Vas a transferir</Text>
                   <Text style={styles.confirmAmount}>RD${amountNum.toLocaleString('es-DO', { minimumFractionDigits: 2 })}</Text>
@@ -346,7 +351,7 @@ export default function TransferScreen() {
 
       {/* Sticky confirm button */}
       {step === 3 && (
-        <View style={styles.stickyFooter}>
+        <View style={[styles.stickyFooter, { backgroundColor: c.bg }]}>
           <Pressable onPress={handleConfirm} disabled={transfer.isPending}>
             <LinearGradient
               colors={['#10b981', '#059669']}

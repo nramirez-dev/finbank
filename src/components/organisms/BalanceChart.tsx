@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
 import type { Transaction } from '@/domain/entities/Transaction';
 import { Skeleton } from '@/components/atoms/Skeleton';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 interface BalanceChartProps {
   transactions?: Transaction[];
@@ -17,6 +18,7 @@ export const BalanceChart = ({
   title = 'Ingresos vs gastos (6 meses)',
 }: BalanceChartProps) => {
   const { width } = useWindowDimensions();
+  const c = useThemeColors();
   // screen width − marginHorizontal (20×2) − card padding (16×2)
   const chartWidth = width - 40 - 32;
 
@@ -55,8 +57,8 @@ export const BalanceChart = ({
   });
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>{title}</Text>
+    <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
+      <Text style={[styles.title, { color: c.textSecondary }]}>{title}</Text>
       <BarChart
         data={data}
         width={chartWidth}
@@ -64,14 +66,14 @@ export const BalanceChart = ({
         barWidth={10}
         spacing={10}
         barBorderRadius={4}
-        yAxisTextStyle={styles.axisText}
-        xAxisLabelTextStyle={styles.axisText}
+        yAxisTextStyle={[styles.axisText, { color: c.textMuted }]}
+        xAxisLabelTextStyle={[styles.axisText, { color: c.textMuted }]}
         noOfSections={4}
         rulesType="solid"
-        rulesColor="rgba(255,255,255,0.07)"
+        rulesColor={c.border}
         backgroundColor="transparent"
         yAxisColor="transparent"
-        xAxisColor="rgba(255,255,255,0.1)"
+        xAxisColor={c.border}
       />
     </View>
   );

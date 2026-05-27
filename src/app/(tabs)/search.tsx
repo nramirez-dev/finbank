@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useResponsive } from '@/lib/useResponsive';
+import { useThemeColors, type ThemeColors } from '@/lib/useThemeColors';
 
 import { useTransactions } from '@/hooks/useTransactions';
 import type { TransactionFilters } from '@/services/transactionService';
@@ -29,6 +30,7 @@ interface ExpandedFiltersProps {
   onChangeMinAmount: (v: string) => void;
   onChangeMaxAmount: (v: string) => void;
   onClear: () => void;
+  c: ThemeColors;
 }
 
 const ExpandedFilters = ({
@@ -41,10 +43,11 @@ const ExpandedFilters = ({
   onChangeMinAmount,
   onChangeMaxAmount,
   onClear,
+  c,
 }: ExpandedFiltersProps) => (
-  <View style={styles.expandedPanel}>
+  <View style={[styles.expandedPanel, { backgroundColor: c.surface, borderColor: c.border }]}>
     <View style={styles.expandedGroup}>
-      <Text style={styles.expandedLabel}>Rango de fechas</Text>
+      <Text style={[styles.expandedLabel, { color: c.textSecondary }]}>Rango de fechas</Text>
       <View style={styles.expandedRow}>
         <View style={styles.expandedHalf}>
           <Input label="Desde" value={dateFrom} onChangeText={onChangeDateFrom} placeholder="YYYY-MM-DD" />
@@ -56,7 +59,7 @@ const ExpandedFilters = ({
     </View>
 
     <View style={styles.expandedGroup}>
-      <Text style={styles.expandedLabel}>Rango de monto</Text>
+      <Text style={[styles.expandedLabel, { color: c.textSecondary }]}>Rango de monto</Text>
       <View style={styles.expandedRow}>
         <View style={styles.expandedHalf}>
           <Input label="Mínimo" value={minAmount} onChangeText={onChangeMinAmount} keyboardType="numeric" />
@@ -123,19 +126,20 @@ export default function SearchScreen() {
   const loadMore = useCallback(() => setPage((p) => p + 1), []);
 
   const { px, fontScale } = useResponsive();
+  const c = useThemeColors();
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.bg }]}>
       {/* Fixed header */}
       <View style={[styles.header, { paddingHorizontal: px }]}>
-        <Text style={[styles.headerTitle, { fontSize: 32 + fontScale }]}>Buscar</Text>
-        <Text style={styles.headerSubtitle}>Encuentra tus transacciones</Text>
+        <Text style={[styles.headerTitle, { fontSize: 32 + fontScale, color: c.text }]}>Buscar</Text>
+        <Text style={[styles.headerSubtitle, { color: c.textSecondary }]}>Encuentra tus transacciones</Text>
       </View>
 
-      <View style={styles.controls}>
+      <View style={[styles.controls, { backgroundColor: c.bg }]}>
         <SearchBar value={search} onChangeText={setSearch} />
 
-        <View style={styles.chipsRow}>
+        <View style={[styles.chipsRow, { backgroundColor: c.bg }]}>
           <FilterChip selected={typeFilter} onChange={setTypeFilter} />
         </View>
 
@@ -152,7 +156,7 @@ export default function SearchScreen() {
           </Pressable>
 
           {!isLoading && (
-            <Text style={styles.resultCount}>
+            <Text style={[styles.resultCount, { color: c.textSecondary }]}>
               {total} {total === 1 ? 'transacción encontrada' : 'transacciones encontradas'}
             </Text>
           )}
@@ -169,6 +173,7 @@ export default function SearchScreen() {
             onChangeMinAmount={setMinAmount}
             onChangeMaxAmount={setMaxAmount}
             onClear={handleClearExpanded}
+            c={c}
           />
         )}
       </View>
@@ -186,7 +191,7 @@ export default function SearchScreen() {
         <FlatList
           data={paginatedData}
           keyExtractor={(item) => item.id}
-          style={styles.flatList}
+          style={[styles.flatList, { backgroundColor: c.bg }]}
           renderItem={({ item }) => (
             <TransactionCard transaction={item} onPress={() => handlePressTx(item)} />
           )}
@@ -210,10 +215,10 @@ export default function SearchScreen() {
                 />
               </View>
             ) : paginatedData.length > 0 ? (
-              <Text style={styles.endText}>Fin de los resultados</Text>
+              <Text style={[styles.endText, { color: c.textMuted }]}>Fin de los resultados</Text>
             ) : null
           }
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, { backgroundColor: c.bg }]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         />

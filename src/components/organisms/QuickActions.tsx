@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { CreditCard, QrCode, Send, Smartphone } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 interface QuickActionProps {
   icon: React.ReactNode;
@@ -9,15 +10,18 @@ interface QuickActionProps {
   onPress?: () => void;
 }
 
-const QuickAction = ({ icon, label, accentColor, onPress }: QuickActionProps) => (
+const QuickAction = ({ icon, label, accentColor, onPress }: QuickActionProps) => {
+  const c = useThemeColors();
+  return (
   <Pressable style={styles.actionContainer} onPress={onPress}>
-    <View style={[styles.actionButton, { borderColor: `${accentColor}30` }]}>
+    <View style={[styles.actionButton, { backgroundColor: c.iconBtn, borderColor: `${accentColor}30` }]}>
       <View style={[styles.actionBg, { backgroundColor: `${accentColor}18` }]} />
       {icon}
     </View>
-    <Text style={styles.actionLabel}>{label}</Text>
+    <Text style={[styles.actionLabel, { color: c.textSecondary }]}>{label}</Text>
   </Pressable>
-);
+  );
+};
 
 export const QuickActions = () => {
   const router = useRouter();

@@ -1,5 +1,6 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import type { Transaction } from '@/domain/entities/Transaction';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 type FilterValue = Transaction['type'] | 'todos';
 
@@ -16,6 +17,7 @@ const FILTERS: { label: string; value: FilterValue }[] = [
 ];
 
 export const FilterChip = ({ selected, onChange }: FilterChipProps) => {
+  const c = useThemeColors();
   return (
     <ScrollView
       horizontal
@@ -26,9 +28,9 @@ export const FilterChip = ({ selected, onChange }: FilterChipProps) => {
         <TouchableOpacity
           key={f.value}
           onPress={() => onChange(f.value)}
-          style={[styles.chip, selected === f.value && styles.chipActive]}
+          style={[styles.chip, { backgroundColor: c.chipBg, borderColor: c.chipBorder }, selected === f.value && styles.chipActive]}
         >
-          <Text style={[styles.label, selected === f.value && styles.labelActive]}>
+          <Text style={[styles.label, { color: c.textSecondary }, selected === f.value && styles.labelActive]}>
             {f.label}
           </Text>
         </TouchableOpacity>

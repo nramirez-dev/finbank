@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { Search, X } from 'lucide-react-native';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 interface SearchBarProps {
   value: string;
@@ -16,6 +17,7 @@ export const SearchBar = ({
   onClear,
 }: SearchBarProps) => {
   const [localValue, setLocalValue] = useState(value);
+  const c = useThemeColors();
 
   useEffect(() => {
     setLocalValue(value);
@@ -37,19 +39,19 @@ export const SearchBar = ({
   };
 
   return (
-    <View style={styles.container}>
-      <Search size={20} color="rgba(255,255,255,0.4)" strokeWidth={2} />
+    <View style={[styles.container, { backgroundColor: c.surface, borderColor: c.border }]}>
+      <Search size={20} color={c.searchIcon} strokeWidth={2} />
       <TextInput
         value={localValue}
         onChangeText={setLocalValue}
         placeholder={placeholder}
-        placeholderTextColor="rgba(255,255,255,0.35)"
-        style={styles.input}
+        placeholderTextColor={c.searchPlaceholder}
+        style={[styles.input, { color: c.text }]}
         selectionColor="#3b82f6"
       />
       {localValue.length > 0 && (
         <Pressable onPress={handleClear} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <X size={16} color="rgba(255,255,255,0.5)" strokeWidth={2} />
+          <X size={16} color={c.textSecondary} strokeWidth={2} />
         </Pressable>
       )}
     </View>

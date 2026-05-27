@@ -8,6 +8,7 @@ import { useProfile } from '@/hooks/useProfile';
 import { useAccountsByOwner } from '@/hooks/useAccounts';
 import { useRecentTransactions } from '@/hooks/useTransactions';
 import { useAppStore } from '@/store/useAppStore';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 import { Skeleton, SkeletonRow } from '@/components/atoms/Skeleton';
 import { AccountSummary } from '@/components/organisms/AccountSummary';
@@ -46,6 +47,7 @@ export default function HomeScreen() {
   const { activeProfileId, selectedAccountId, setSelectedAccount } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
   const { px, fontScale } = useResponsive();
+  const c = useThemeColors();
 
   const {
     data: profile,
@@ -79,7 +81,7 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.root}>
+    <View style={[styles.root, { backgroundColor: c.bg }]}>
       <ScrollView
         style={styles.scroll}
         showsVerticalScrollIndicator={false}
@@ -111,18 +113,18 @@ export default function HomeScreen() {
                   </View>
                 )}
                 <View>
-                  <Text style={[styles.greeting, { fontSize: 13 + fontScale }]}>{getGreeting()}</Text>
-                  <Text style={[styles.userName, { fontSize: 18 + fontScale }]}>{profile?.name ?? '—'}</Text>
+                  <Text style={[styles.greeting, { fontSize: 13 + fontScale, color: c.textSecondary }]}>{getGreeting()}</Text>
+                  <Text style={[styles.userName, { fontSize: 18 + fontScale, color: c.text }]}>{profile?.name ?? '—'}</Text>
                 </View>
               </View>
 
               <View style={{ flexDirection: 'row', gap: 10 }}>
-                <Pressable style={styles.iconButton} onPress={() => router.push('/search')}>
-                  <Search size={20} color="#fff" />
+                <Pressable style={[styles.iconButton, { backgroundColor: c.iconBtn, borderColor: c.border }]} onPress={() => router.push('/search')}>
+                  <Search size={20} color={c.text} />
                 </Pressable>
-                <Pressable style={styles.iconButton}>
-                  <Bell size={20} color="#fff" />
-                  <View style={styles.notificationDot} />
+                <Pressable style={[styles.iconButton, { backgroundColor: c.iconBtn, borderColor: c.border }]}>
+                  <Bell size={20} color={c.text} />
+                  <View style={[styles.notificationDot, { borderColor: c.bg }]} />
                 </Pressable>
               </View>
             </View>
@@ -155,7 +157,7 @@ export default function HomeScreen() {
 
         {/* ── Recent transactions ── */}
         <View style={[styles.sectionHeader, { paddingHorizontal: px }]}>
-          <Text style={[styles.sectionTitle, { fontSize: 18 + fontScale }]}>Transacciones recientes</Text>
+          <Text style={[styles.sectionTitle, { fontSize: 18 + fontScale, color: c.text }]}>Transacciones recientes</Text>
           <Pressable onPress={() => router.push('/search')} hitSlop={8}>
             <Text style={styles.sectionLink}>Ver todas</Text>
           </Pressable>
@@ -172,7 +174,7 @@ export default function HomeScreen() {
         ) : !transactions?.length ? (
           <EmptyState message="No hay transacciones recientes" />
         ) : (
-          <View style={[styles.txCard, { marginHorizontal: px }]}>
+          <View style={[styles.txCard, { marginHorizontal: px, backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
             {transactions.map((tx) => (
               <TransactionCard key={tx.id} transaction={tx} onPress={() => handlePressTx(tx)} />
             ))}

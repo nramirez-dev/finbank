@@ -6,6 +6,7 @@ import { AccountCard } from '@/components/molecules/AccountCard';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { Account } from '@/domain/entities/Account';
 import { formatCurrency } from '@/lib/formatCurrency';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 interface AccountSummaryProps {
   accounts?: Account[];
@@ -32,6 +33,7 @@ export const AccountSummary = ({
   onSelectAccount,
 }: AccountSummaryProps) => {
   const [showBalance, setShowBalance] = useState(true);
+  const c = useThemeColors();
 
   if (isLoading) return <AccountSummarySkeleton />;
 
@@ -53,7 +55,7 @@ export const AccountSummary = ({
     <View style={styles.wrapper}>
       {/* Balance card */}
       <LinearGradient
-        colors={['#0f172a', '#1e293b']}
+        colors={c.balanceCardGradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.balanceCard}

@@ -30,6 +30,7 @@ import { useProfile, useProfiles } from '@/hooks/useProfile';
 import { useAccountsByOwner } from '@/hooks/useAccounts';
 import { useAppStore } from '@/store/useAppStore';
 import { useThemeStore } from '@/store/useThemeStore';
+import { useThemeColors } from '@/lib/useThemeColors';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { Account } from '@/domain/entities/Account';
@@ -52,7 +53,9 @@ interface ProfileChipProps {
   onPress: () => void;
 }
 
-const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => (
+const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => {
+  const c = useThemeColors();
+  return (
   <Pressable style={styles.chip} onPress={onPress}>
     <View style={[styles.chipRing, active && styles.chipRingActive]}>
       {avatarUrl ? (
@@ -63,12 +66,13 @@ const ProfileChip = ({ name, avatarUrl, active, onPress }: ProfileChipProps) => 
         </View>
       )}
     </View>
-    <Text style={[styles.chipName, active && styles.chipNameActive]} numberOfLines={1}>
+    <Text style={[styles.chipName, { color: c.textSecondary }, active && styles.chipNameActive]} numberOfLines={1}>
       {name.split(' ')[0]}
     </Text>
     {active && <View style={styles.chipActiveDot} />}
   </Pressable>
-);
+  );
+};
 
 // ─── Setting row ──────────────────────────────────────────────────────────────
 interface SettingRowProps {
@@ -81,10 +85,17 @@ interface SettingRowProps {
 }
 
 const SettingRow = ({ icon, label, right, onPress, isFirst, isLast }: SettingRowProps) => {
+  const c = useThemeColors();
   const Inner = (
-    <View style={[styles.row, !isLast && styles.rowBorder, isFirst && styles.rowFirst, isLast && styles.rowLast]}>
+    <View style={[
+      styles.row,
+      { backgroundColor: c.surface, borderBottomColor: c.rowBorder },
+      !isLast && styles.rowBorder,
+      isFirst && styles.rowFirst,
+      isLast && styles.rowLast,
+    ]}>
       {icon}
-      <Text style={styles.rowLabel}>{label}</Text>
+      <Text style={[styles.rowLabel, { color: c.text }]}>{label}</Text>
       <View style={styles.rowRight}>{right}</View>
     </View>
   );
@@ -96,6 +107,7 @@ const SettingRow = ({ icon, label, right, onPress, isFirst, isLast }: SettingRow
 export default function ProfileScreen() {
   const { activeProfileId, setActiveProfile } = useAppStore();
   const { isDarkMode, toggleDarkMode } = useThemeStore();
+  const c = useThemeColors();
   const [notifications, setNotifications] = useState(true);
 
   const { data: profile, isLoading: profileLoading } = useProfile();
@@ -115,19 +127,19 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView
-      style={styles.root}
+      style={[styles.root, { backgroundColor: c.bg }]}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
       {/* ── Page title ── */}
       <View style={styles.pageHeader}>
-        <Text style={styles.pageTitle}>Perfil</Text>
+        <Text style={[styles.pageTitle, { color: c.text }]}>Perfil</Text>
       </View>
 
       {/* ── Profile hero card ── */}
       <View style={styles.heroPadding}>
         <LinearGradient
-          colors={['#1e293b', '#0f172a']}
+          colors={c.heroCardGradient}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.heroCard}
@@ -161,7 +173,7 @@ export default function ProfileScreen() {
       {/* ── Profile selector (horizontal chips) ── */}
       {profiles.length > 1 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Cambiar perfil</Text>
+          <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Cambiar perfil</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -182,11 +194,11 @@ export default function ProfileScreen() {
 
       {/* ── Mis Cuentas ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Mis Cuentas</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Mis Cuentas</Text>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
           {accountsLoading ? (
             [0, 1].map((i) => (
-              <View key={i} style={[styles.row, i === 0 && styles.rowFirst, styles.rowBorder]}>
+              <View key={i} style={[styles.row, { backgroundColor: c.surface, borderBottomColor: c.rowBorder }, i === 0 && styles.rowFirst, styles.rowBorder]}>
                 <Skeleton width={44} height={44} borderRadius={12} />
                 <View style={{ flex: 1, marginLeft: 12, gap: 6 }}>
                   <Skeleton width={120} height={14} borderRadius={4} />
@@ -197,7 +209,7 @@ export default function ProfileScreen() {
             ))
           ) : accounts.length === 0 ? (
             <View style={[styles.row, styles.rowFirst, styles.rowLast]}>
-              <Text style={styles.emptyText}>Sin cuentas asociadas</Text>
+              <Text style={[styles.emptyText, { color: c.textMuted }]}>Sin cuentas asociadas</Text>
             </View>
           ) : (
             accounts.map((account, idx) => (
@@ -205,6 +217,7 @@ export default function ProfileScreen() {
                 key={account.id}
                 style={[
                   styles.row,
+                  { backgroundColor: c.surface, borderBottomColor: c.rowBorder },
                   idx === 0 && styles.rowFirst,
                   idx === accounts.length - 1 ? styles.rowLast : styles.rowBorder,
                 ]}
@@ -218,10 +231,10 @@ export default function ProfileScreen() {
                   <CreditCard size={20} color="#fff" strokeWidth={2} />
                 </LinearGradient>
                 <View style={styles.accountInfo}>
-                  <Text style={styles.accountName}>{TYPE_LABELS[account.type]}</Text>
-                  <Text style={styles.accountNumber}>**** {account.id.slice(-4)}</Text>
+                  <Text style={[styles.accountName, { color: c.text }]}>{TYPE_LABELS[account.type]}</Text>
+                  <Text style={[styles.accountNumber, { color: c.textSecondary }]}>**** {account.id.slice(-4)}</Text>
                 </View>
-                <Text style={styles.accountBalance}>
+                <Text style={[styles.accountBalance, { color: c.text }]}>
                   {formatCurrency(account.balance, account.currency)}
                 </Text>
               </View>
@@ -232,8 +245,8 @@ export default function ProfileScreen() {
 
       {/* ── Configuración ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Configuración</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Configuración</Text>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
           <SettingRow
             isFirst
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(59,130,246,0.15)' }]}>{isDarkMode ? <Moon size={19} color="#3b82f6" strokeWidth={2} /> : <Sun size={19} color="#3b82f6" strokeWidth={2} />}</View>}
@@ -263,64 +276,64 @@ export default function ProfileScreen() {
             onPress={() => {}}
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(16,185,129,0.15)' }]}><Globe size={19} color="#10b981" strokeWidth={2} /></View>}
             label="Idioma"
-            right={<><Text style={styles.rowValueText}>Español</Text><ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} /></>}
+            right={<><Text style={[styles.rowValueText, { color: c.textSecondary }]}>Español</Text><ChevronRight size={17} color={c.textMuted} strokeWidth={2} /></>}
           />
           <SettingRow
             isLast
             onPress={() => {}}
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(236,72,153,0.15)' }]}><Smartphone size={19} color="#ec4899" strokeWidth={2} /></View>}
             label="Dispositivos"
-            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+            right={<ChevronRight size={17} color={c.textMuted} strokeWidth={2} />}
           />
         </View>
       </View>
 
       {/* ── Seguridad ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Seguridad</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Seguridad</Text>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
           <SettingRow
             isFirst
             onPress={() => {}}
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(239,68,68,0.15)' }]}><Lock size={19} color="#ef4444" strokeWidth={2} /></View>}
             label="Cambiar PIN"
-            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+            right={<ChevronRight size={17} color={c.textMuted} strokeWidth={2} />}
           />
           <SettingRow
             isLast
             onPress={() => {}}
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(16,185,129,0.15)' }]}><Shield size={19} color="#10b981" strokeWidth={2} /></View>}
             label="Autenticación"
-            right={<><Text style={styles.rowValueText}>Biométrico</Text><ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} /></>}
+            right={<><Text style={[styles.rowValueText, { color: c.textSecondary }]}>Biométrico</Text><ChevronRight size={17} color={c.textMuted} strokeWidth={2} /></>}
           />
         </View>
       </View>
 
       {/* ── Soporte ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Soporte</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Soporte</Text>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
           <SettingRow
             isFirst
             onPress={() => {}}
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(59,130,246,0.15)' }]}><HelpCircle size={19} color="#3b82f6" strokeWidth={2} /></View>}
             label="Centro de ayuda"
-            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+            right={<ChevronRight size={17} color={c.textMuted} strokeWidth={2} />}
           />
           <SettingRow
             isLast
             onPress={() => {}}
             icon={<View style={[styles.rowIcon, { backgroundColor: 'rgba(245,158,11,0.15)' }]}><Mail size={19} color="#f59e0b" strokeWidth={2} /></View>}
             label="Contacto"
-            right={<ChevronRight size={17} color="rgba(255,255,255,0.28)" strokeWidth={2} />}
+            right={<ChevronRight size={17} color={c.textMuted} strokeWidth={2} />}
           />
         </View>
       </View>
 
       {/* ── Sesión ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Sesión</Text>
-        <View style={styles.card}>
+        <Text style={[styles.sectionTitle, { color: c.textSecondary }]}>Sesión</Text>
+        <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
           <Pressable
             onPress={handleLogout}
             style={[styles.row, styles.rowFirst, styles.rowLast]}
@@ -335,8 +348,8 @@ export default function ProfileScreen() {
 
       {/* ── Footer ── */}
       <View style={styles.footer}>
-        <Text style={styles.footerVersion}>FinBank v1.0.0</Text>
-        <Text style={styles.footerCopy}>© 2026 FinBank. Todos los derechos reservados.</Text>
+        <Text style={[styles.footerVersion, { color: c.textMuted }]}>FinBank v1.0.0</Text>
+        <Text style={[styles.footerCopy, { color: c.textMuted }]}>© 2026 FinBank. Todos los derechos reservados.</Text>
       </View>
     </ScrollView>
   );

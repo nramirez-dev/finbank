@@ -9,6 +9,7 @@ import { Skeleton } from '@/components/atoms/Skeleton';
 import { ErrorState } from '@/components/organisms/ErrorState';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { formatDate, formatDateTime } from '@/lib/formatDate';
+import { useThemeColors } from '@/lib/useThemeColors';
 import type { Transaction } from '@/domain/entities/Transaction';
 import type { Account } from '@/domain/entities/Account';
 
@@ -81,6 +82,7 @@ export default function TransactionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
 
+  const c = useThemeColors();
   const { data: tx, isLoading: txLoading, isError: txError, refetch } = useTransaction(id);
   const { data: fromAccount, isLoading: fromLoading } = useAccount(tx?.fromAccountId ?? '');
   const { data: toAccount, isLoading: toLoading } = useAccount(tx?.toAccountId ?? '');
@@ -106,7 +108,7 @@ export default function TransactionDetailScreen() {
   if (txLoading) return <ScreenSkeleton />;
   if (txError || !tx) {
     return (
-      <View style={[styles.root, { justifyContent: 'center' }]}>
+      <View style={[styles.root, { backgroundColor: c.bg, justifyContent: 'center' }]}>
         <ErrorState message="No se pudo cargar la transacción" onRetry={refetch} />
       </View>
     );
@@ -117,14 +119,14 @@ export default function TransactionDetailScreen() {
 
   return (
     <ScrollView
-      style={styles.root}
+      style={[styles.root, { backgroundColor: c.bg }]}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.scrollContent}
     >
       {/* Header */}
       <Animated.View entering={FadeInDown.delay(0).duration(350)}>
         <View style={styles.header}>
-          <Pressable style={styles.backBtn} onPress={() => router.back()}>
+          <Pressable style={[styles.backBtn, { backgroundColor: c.iconBtn, borderColor: c.border }]} onPress={() => router.back()}>
             <ArrowLeft size={22} color="#fff" strokeWidth={2} />
           </Pressable>
           <View style={[styles.badge, { backgroundColor: cfg.badgeBg }]}>
@@ -136,7 +138,7 @@ export default function TransactionDetailScreen() {
 
       {/* Amount card */}
       <Animated.View entering={FadeInDown.delay(80).duration(350)}>
-        <View style={styles.amountCard}>
+        <View style={[styles.amountCard, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
           <Text style={styles.amountLabel}>Monto de la transacción</Text>
           <Text style={[styles.amount, { color: cfg.amountColor }]}>
             {cfg.prefix}{formatCurrency(tx.amount)}
@@ -147,7 +149,7 @@ export default function TransactionDetailScreen() {
 
       {/* Description + meta */}
       <Animated.View entering={FadeInDown.delay(160).duration(350)}>
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
           <View style={styles.cardRow}>
             <Text style={styles.cardRowLabel}>Descripción</Text>
             <Text style={styles.cardRowValue}>{tx.description}</Text>
@@ -174,7 +176,7 @@ export default function TransactionDetailScreen() {
 
       {/* Accounts */}
       <Animated.View entering={FadeInDown.delay(240).duration(350)}>
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
           <Text style={styles.cardSectionLabel}>Cuentas</Text>
           <View style={styles.accountsRow}>
             <MiniAccountCard account={fromAccount} isLoading={fromLoading} label="Origen" />
@@ -186,7 +188,7 @@ export default function TransactionDetailScreen() {
 
       {/* Status timeline */}
       <Animated.View entering={FadeInDown.delay(320).duration(350)}>
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
           <Text style={styles.cardSectionLabel}>Estado</Text>
           <TimelineStep label="Iniciado" detail={formatDateTime(tx.date)} />
           <TimelineStep label="Procesado" detail="Verificación completada" />

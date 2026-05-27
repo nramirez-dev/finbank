@@ -14,6 +14,7 @@ import {
 import type { Transaction } from '@/domain/entities/Transaction';
 import { formatCurrency } from '@/lib/formatCurrency';
 import { formatDate } from '@/lib/formatDate';
+import { useThemeColors } from '@/lib/useThemeColors';
 
 interface TransactionCardProps {
   transaction: Transaction;
@@ -58,18 +59,19 @@ export const TransactionCard = ({ transaction, onPress }: TransactionCardProps) 
   const Icon = categoryOverride?.Icon ?? typeConfig.Icon;
   const color = categoryOverride?.color ?? typeConfig.color;
   const { amountPrefix } = typeConfig;
+  const c = useThemeColors();
 
   return (
-    <Pressable style={styles.container} onPress={onPress}>
+    <Pressable style={[styles.container, { borderBottomColor: c.txCardBorder }]} onPress={onPress}>
       <View style={[styles.iconBox, { backgroundColor: `${color}22` }]}>
         <Icon size={22} color={color} strokeWidth={2} />
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.description} numberOfLines={1}>
+        <Text style={[styles.description, { color: c.text }]} numberOfLines={1}>
           {transaction.description}
         </Text>
-        <Text style={styles.date}>{formatDate(transaction.date)}</Text>
+        <Text style={[styles.date, { color: c.textSecondary }]}>{formatDate(transaction.date)}</Text>
       </View>
 
       <Text style={[styles.amount, { color }]}>
