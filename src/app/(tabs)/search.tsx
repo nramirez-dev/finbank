@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useResponsive } from '@/lib/useResponsive';
 
 import { useTransactions } from '@/hooks/useTransactions';
 import type { TransactionFilters } from '@/services/transactionService';
@@ -121,11 +122,13 @@ export default function SearchScreen() {
 
   const loadMore = useCallback(() => setPage((p) => p + 1), []);
 
+  const { px, fontScale } = useResponsive();
+
   return (
     <View style={styles.root}>
       {/* Fixed header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Buscar</Text>
+      <View style={[styles.header, { paddingHorizontal: px }]}>
+        <Text style={[styles.headerTitle, { fontSize: 32 + fontScale }]}>Buscar</Text>
         <Text style={styles.headerSubtitle}>Encuentra tus transacciones</Text>
       </View>
 
@@ -227,7 +230,6 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: 56,
     paddingBottom: 8,
-    paddingHorizontal: 20,
   },
   headerTitle: {
     color: '#ffffff',

@@ -1,13 +1,16 @@
-import { FlatList, View, Text } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { TransactionCard } from '@/components/molecules/TransactionCard';
 import { SkeletonRow } from '@/components/atoms/Skeleton';
 import type { Transaction } from '@/domain/entities/Transaction';
+import { ErrorState } from '@/components/organisms/ErrorState';
+import { EmptyState } from '@/components/organisms/EmptyState';
 
 interface TransactionListProps {
   transactions?: Transaction[];
   isLoading?: boolean;
   isError?: boolean;
-  onRetry?: () => void;
+  onRefetch?: () => void;
+  onLoadMore?: () => void;
   onPressItem?: (transaction: Transaction) => void;
 }
 
@@ -19,33 +22,17 @@ const TransactionListSkeleton = () => (
   </View>
 );
 
-const ErrorState = ({ onRetry }: { onRetry?: () => void }) => (
-  <View className="flex-1 items-center justify-center py-12 gap-3">
-    <Text className="text-slate-500 dark:text-slate-400">Error al cargar transacciones</Text>
-    {onRetry && (
-      <Text className="text-primary font-medium" onPress={onRetry}>
-        Reintentar
-      </Text>
-    )}
-  </View>
-);
-
-const EmptyState = () => (
-  <View className="flex-1 items-center justify-center py-12">
-    <Text className="text-slate-400 dark:text-slate-500">No hay transacciones</Text>
-  </View>
-);
-
 export const TransactionList = ({
   transactions,
   isLoading,
   isError,
-  onRetry,
+  onRefetch,
+  onLoadMore,
   onPressItem,
 }: TransactionListProps) => {
   if (isLoading) return <TransactionListSkeleton />;
-  if (isError) return <ErrorState onRetry={onRetry} />;
-  if (!transactions?.length) return <EmptyState />;
+  if (isError) return <ErrorState message="Error al cargar transacciones" onRetry={onRefetch} />;
+  if (!transactions?.length) return <EmptyState message="No hay transacciones" />;
 
   return (
     <FlatList
@@ -57,8 +44,17 @@ export const TransactionList = ({
           onPress={() => onPressItem?.(item)}
         />
       )}
-      contentContainerClassName="pb-4"
+      onEndReached={onLoadMore}
+      onEndReachedThreshold={0.5}
+      contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     />
   );
 };
+
+const styles = StyleSheet.create({
+  content: {
+    paddingBottom: 16,
+    backgroundColor: '#0f172a',
+  },
+});

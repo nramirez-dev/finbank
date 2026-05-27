@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Image, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useResponsive } from '@/lib/useResponsive';
 import { Bell, Search } from 'lucide-react-native';
 
 import { useProfile } from '@/hooks/useProfile';
@@ -44,6 +45,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { activeProfileId, selectedAccountId, setSelectedAccount } = useAppStore();
   const [refreshing, setRefreshing] = useState(false);
+  const { px, gap, fontScale } = useResponsive();
 
   const {
     data: profile,
@@ -91,7 +93,7 @@ export default function HomeScreen() {
         }
       >
         {/* ── Header ── */}
-        <View style={styles.headerArea}>
+        <View style={[styles.headerArea, { paddingHorizontal: px }]}>
           {profileLoading ? (
             <HeaderSkeleton />
           ) : profileError ? (
@@ -109,8 +111,8 @@ export default function HomeScreen() {
                   </View>
                 )}
                 <View>
-                  <Text style={styles.greeting}>{getGreeting()}</Text>
-                  <Text style={styles.userName}>{profile?.name ?? '—'}</Text>
+                  <Text style={[styles.greeting, { fontSize: 13 + fontScale }]}>{getGreeting()}</Text>
+                  <Text style={[styles.userName, { fontSize: 18 + fontScale }]}>{profile?.name ?? '—'}</Text>
                 </View>
               </View>
 
@@ -152,8 +154,8 @@ export default function HomeScreen() {
         )}
 
         {/* ── Recent transactions ── */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Transacciones recientes</Text>
+        <View style={[styles.sectionHeader, { paddingHorizontal: px }]}>
+          <Text style={[styles.sectionTitle, { fontSize: 18 + fontScale }]}>Transacciones recientes</Text>
           <Pressable onPress={() => router.push('/search')} hitSlop={8}>
             <Text style={styles.sectionLink}>Ver todas</Text>
           </Pressable>
@@ -170,7 +172,7 @@ export default function HomeScreen() {
         ) : !transactions?.length ? (
           <EmptyState message="No hay transacciones recientes" />
         ) : (
-          <View style={styles.txCard}>
+          <View style={[styles.txCard, { marginHorizontal: px }]}>
             {transactions.map((tx) => (
               <TransactionCard key={tx.id} transaction={tx} onPress={() => handlePressTx(tx)} />
             ))}
@@ -194,7 +196,6 @@ const styles = StyleSheet.create({
   headerArea: {
     paddingTop: 56,
     paddingBottom: 20,
-    paddingHorizontal: 20,
   },
   headerRow: {
     flexDirection: 'row',
@@ -262,7 +263,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
     marginBottom: 12,
   },
   sectionTitle: {
@@ -276,7 +276,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   txCard: {
-    marginHorizontal: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 20,
     borderWidth: 1,

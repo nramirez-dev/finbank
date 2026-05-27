@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 import { View } from 'react-native';
 import Animated, { useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
@@ -6,11 +7,11 @@ interface SkeletonProps {
   width?: number | string;
   height?: number;
   borderRadius?: number;
-  className?: string;
+  style?: StyleProp<ViewStyle>;
 }
 
-export const Skeleton = ({ width = '100%', height = 16, borderRadius = 8, className }: SkeletonProps) => {
-  const opacity = useSharedValue(0.3);
+export const Skeleton = ({ width = '100%', height = 16, borderRadius = 8, style }: SkeletonProps) => {
+  const opacity = useSharedValue(0.5);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
@@ -19,7 +20,7 @@ export const Skeleton = ({ width = '100%', height = 16, borderRadius = 8, classN
   useEffect(() => {
     opacity.value = withRepeat(withTiming(1, { duration: 700 }), -1, true);
     return () => {
-      opacity.value = 0.3;
+      opacity.value = 0.5;
     };
   }, [opacity]);
 
@@ -30,19 +31,19 @@ export const Skeleton = ({ width = '100%', height = 16, borderRadius = 8, classN
           width: width as number,
           height,
           borderRadius,
-          backgroundColor: '#CBD5E1',
+          backgroundColor: '#334155',
         },
         animatedStyle,
+        style,
       ]}
-      className={className}
     />
   );
 };
 
 export const SkeletonRow = () => (
-  <View className="flex-row items-center gap-3 px-4 py-3">
+  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 12 }}>
     <Skeleton width={44} height={44} borderRadius={22} />
-    <View className="flex-1 gap-2">
+    <View style={{ flex: 1, gap: 8 }}>
       <Skeleton height={14} borderRadius={6} />
       <Skeleton width="60%" height={12} borderRadius={6} />
     </View>
