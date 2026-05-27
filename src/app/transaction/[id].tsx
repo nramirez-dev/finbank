@@ -1,11 +1,10 @@
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { ArrowLeft, CheckCircle, Download } from 'lucide-react-native';
 
 import { useTransaction } from '@/hooks/useTransactions';
 import { useAccount } from '@/hooks/useAccounts';
-import { Badge } from '@/components/atoms/Badge';
-import { Button } from '@/components/atoms/Button';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import { ErrorState } from '@/components/organisms/ErrorState';
 import { formatCurrency } from '@/lib/formatCurrency';
@@ -13,34 +12,27 @@ import { formatDate, formatDateTime } from '@/lib/formatDate';
 import type { Transaction } from '@/domain/entities/Transaction';
 import type { Account } from '@/domain/entities/Account';
 
-// ─── Type config ────────────────────────────────────────────────────────────
-
-type TypeCfg = {
-  badge: 'success' | 'danger' | 'info';
-  amountColor: string;
-  prefix: string;
-  label: string;
-};
+type TypeCfg = { amountColor: string; prefix: string; label: string; badgeColor: string; badgeBg: string };
 
 const TYPE_CFG: Record<Transaction['type'], TypeCfg> = {
-  depósito:      { badge: 'success', amountColor: 'text-success',  prefix: '+', label: 'Depósito' },
-  retiro:        { badge: 'danger',  amountColor: 'text-danger',   prefix: '−', label: 'Retiro' },
-  transferencia: { badge: 'info',    amountColor: 'text-primary',  prefix: '',  label: 'Transferencia' },
+  depósito:      { amountColor: '#10b981', prefix: '+', label: 'Depósito',      badgeColor: '#10b981', badgeBg: 'rgba(16,185,129,0.15)' },
+  retiro:        { amountColor: '#ef4444', prefix: '−', label: 'Retiro',        badgeColor: '#ef4444', badgeBg: 'rgba(239,68,68,0.15)'  },
+  transferencia: { amountColor: '#3b82f6', prefix: '',  label: 'Transferencia', badgeColor: '#3b82f6', badgeBg: 'rgba(59,130,246,0.15)' },
 };
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
-
 const ScreenSkeleton = () => (
-  <View className="flex-1 bg-slate-50 dark:bg-dark-bg pt-14 px-4 gap-4">
-    <Skeleton width={40} height={40} borderRadius={20} />
-    <View className="items-center gap-3 py-6">
-      <Skeleton width={120} height={16} borderRadius={8} />
-      <Skeleton width={200} height={44} borderRadius={10} />
-      <Skeleton width={140} height={14} borderRadius={6} />
+  <View style={styles.root}>
+    <View style={styles.skeletonHeader}>
+      <Skeleton width={44} height={44} borderRadius={14} />
     </View>
-    <Skeleton height={120} borderRadius={16} />
-    <Skeleton height={100} borderRadius={16} />
-    <Skeleton height={130} borderRadius={16} />
+    <View style={styles.skeletonAmountCard}>
+      <Skeleton width={120} height={14} borderRadius={6} />
+      <Skeleton width={220} height={52} borderRadius={10} />
+      <Skeleton width={160} height={13} borderRadius={6} />
+    </View>
+    <Skeleton width="100%" height={130} borderRadius={20} style={styles.skeletonCard} />
+    <Skeleton width="100%" height={110} borderRadius={20} style={styles.skeletonCard} />
+    <Skeleton width="100%" height={140} borderRadius={20} style={styles.skeletonCard} />
   </View>
 );
 
@@ -51,62 +43,39 @@ interface MiniAccountCardProps {
 }
 
 const MiniAccountCard = ({ account, isLoading, label }: MiniAccountCardProps) => (
-  <View className="flex-1 bg-slate-100 dark:bg-slate-800 rounded-xl p-3 gap-1">
-    <Text className="text-xs text-slate-500 dark:text-slate-400">{label}</Text>
+  <View style={styles.miniCard}>
+    <Text style={styles.miniCardLabel}>{label}</Text>
     {isLoading ? (
-      <View className="gap-1.5">
+      <View style={{ gap: 6, marginTop: 4 }}>
         <Skeleton height={12} borderRadius={4} />
-        <Skeleton width="60%" height={12} borderRadius={4} />
+        <Skeleton width={80} height={12} borderRadius={4} />
       </View>
     ) : account ? (
       <>
-        <Text className="text-sm font-semibold text-slate-900 dark:text-white capitalize">
-          {account.type} · {account.currency}
-        </Text>
-        <Text className="text-xs font-mono text-slate-500 dark:text-slate-400">
-          **** {account.id.slice(-4)}
-        </Text>
-        <Text className="text-sm font-bold text-slate-800 dark:text-white mt-0.5">
-          {formatCurrency(account.balance, account.currency)}
-        </Text>
+        <Text style={styles.miniCardType}>{account.type} · {account.currency}</Text>
+        <Text style={styles.miniCardNumber}>**** {account.id.slice(-4)}</Text>
+        <Text style={styles.miniCardBalance}>{formatCurrency(account.balance, account.currency)}</Text>
       </>
     ) : (
-      <Text className="text-xs text-slate-400">Cuenta no encontrada</Text>
+      <Text style={styles.miniCardEmpty}>No disponible</Text>
     )}
   </View>
 );
 
-interface TimelineStepProps {
-  label: string;
-  detail: string;
-  done: boolean;
-  isLast?: boolean;
-}
-
-const TimelineStep = ({ label, detail, done, isLast = false }: TimelineStepProps) => (
-  <View className="flex-row gap-3">
-    <View className="items-center">
-      <View
-        className={`w-7 h-7 rounded-full items-center justify-center ${
-          done ? 'bg-success' : 'bg-slate-300 dark:bg-slate-600'
-        }`}
-      >
-        <Text className="text-white text-xs font-bold">{done ? '✓' : '·'}</Text>
+const TimelineStep = ({ label, detail, isLast = false }: { label: string; detail: string; isLast?: boolean }) => (
+  <View style={styles.timelineRow}>
+    <View style={styles.timelineLeft}>
+      <View style={styles.timelineDot}>
+        <CheckCircle size={16} color="#10b981" />
       </View>
-      {!isLast && (
-        <View className={`w-0.5 flex-1 mt-1 ${done ? 'bg-success/40' : 'bg-slate-200 dark:bg-slate-700'}`} />
-      )}
+      {!isLast && <View style={styles.timelineLine} />}
     </View>
-    <View className="pb-5">
-      <Text className={`text-sm font-medium ${done ? 'text-slate-900 dark:text-white' : 'text-slate-400'}`}>
-        {label}
-      </Text>
-      <Text className="text-xs text-slate-400 dark:text-slate-500">{detail}</Text>
+    <View style={[styles.timelineContent, !isLast && { paddingBottom: 20 }]}>
+      <Text style={styles.timelineLabel}>{label}</Text>
+      <Text style={styles.timelineDetail}>{detail}</Text>
     </View>
   </View>
 );
-
-// ─── Main screen ─────────────────────────────────────────────────────────────
 
 export default function TransactionDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -137,7 +106,7 @@ export default function TransactionDetailScreen() {
   if (txLoading) return <ScreenSkeleton />;
   if (txError || !tx) {
     return (
-      <View className="flex-1 bg-slate-50 dark:bg-dark-bg pt-14">
+      <View style={[styles.root, { justifyContent: 'center' }]}>
         <ErrorState message="No se pudo cargar la transacción" onRetry={refetch} />
       </View>
     );
@@ -148,112 +117,307 @@ export default function TransactionDetailScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-slate-50 dark:bg-dark-bg"
+      style={styles.root}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{ paddingBottom: 40 }}
+      contentContainerStyle={styles.scrollContent}
     >
-      {/* ── Back + type header ── */}
+      {/* Header */}
       <Animated.View entering={FadeInDown.delay(0).duration(350)}>
-        <View className="flex-row items-center justify-between px-4 pt-14 pb-2">
-          <Pressable
-            onPress={() => router.back()}
-            hitSlop={12}
-            className="w-10 h-10 items-center justify-center rounded-full bg-white dark:bg-dark-surface"
-          >
-            <Text className="text-slate-700 dark:text-white text-lg">←</Text>
+        <View style={styles.header}>
+          <Pressable style={styles.backBtn} onPress={() => router.back()}>
+            <ArrowLeft size={22} color="#fff" strokeWidth={2} />
           </Pressable>
-          <Badge label={cfg.label} variant={cfg.badge} />
-          <View className="w-10" />
+          <View style={[styles.badge, { backgroundColor: cfg.badgeBg }]}>
+            <Text style={[styles.badgeText, { color: cfg.badgeColor }]}>{cfg.label}</Text>
+          </View>
+          <View style={styles.backBtn} />
         </View>
       </Animated.View>
 
-      {/* ── Amount card ── */}
+      {/* Amount card */}
       <Animated.View entering={FadeInDown.delay(80).duration(350)}>
-        <View className="mx-4 mt-4 bg-white dark:bg-dark-surface rounded-2xl p-6 items-center gap-2">
-          <Text className="text-sm text-slate-500 dark:text-slate-400">Monto de la transacción</Text>
-          <Text className={`text-5xl font-bold tracking-tight ${cfg.amountColor}`}>
+        <View style={styles.amountCard}>
+          <Text style={styles.amountLabel}>Monto de la transacción</Text>
+          <Text style={[styles.amount, { color: cfg.amountColor }]}>
             {cfg.prefix}{formatCurrency(tx.amount)}
           </Text>
-          <Text className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            {formatDateTime(tx.date)}
-          </Text>
+          <Text style={styles.amountDate}>{formatDateTime(tx.date)}</Text>
         </View>
       </Animated.View>
 
-      {/* ── Description + ID ── */}
+      {/* Description + meta */}
       <Animated.View entering={FadeInDown.delay(160).duration(350)}>
-        <View className="mx-4 mt-3 bg-white dark:bg-dark-surface rounded-2xl px-5 py-4 gap-3">
-          <View className="flex-row justify-between items-start">
-            <Text className="text-xs text-slate-500 dark:text-slate-400">Descripción</Text>
-            <Text className="text-sm font-medium text-slate-900 dark:text-white flex-1 text-right ml-4">
-              {tx.description}
-            </Text>
+        <View style={styles.card}>
+          <View style={styles.cardRow}>
+            <Text style={styles.cardRowLabel}>Descripción</Text>
+            <Text style={styles.cardRowValue}>{tx.description}</Text>
           </View>
-          <View className="h-px bg-slate-100 dark:bg-slate-800" />
-          <View className="flex-row justify-between">
-            <Text className="text-xs text-slate-500 dark:text-slate-400">ID transacción</Text>
-            <Text className="text-xs font-mono text-slate-700 dark:text-slate-300">{tx.id}</Text>
+          <View style={styles.divider} />
+          <View style={styles.cardRow}>
+            <Text style={styles.cardRowLabel}>ID transacción</Text>
+            <Text style={[styles.cardRowValue, styles.mono]}>{tx.id}</Text>
           </View>
-          <View className="h-px bg-slate-100 dark:bg-slate-800" />
-          <View className="flex-row justify-between">
-            <Text className="text-xs text-slate-500 dark:text-slate-400">Fecha</Text>
-            <Text className="text-xs text-slate-700 dark:text-slate-300">{formatDate(tx.date)}</Text>
+          <View style={styles.divider} />
+          <View style={styles.cardRow}>
+            <Text style={styles.cardRowLabel}>Fecha</Text>
+            <Text style={styles.cardRowValue}>{formatDate(tx.date)}</Text>
           </View>
-          <View className="h-px bg-slate-100 dark:bg-slate-800" />
-          <View className="flex-row justify-between">
-            <Text className="text-xs text-slate-500 dark:text-slate-400">Hora</Text>
-            <Text className="text-xs text-slate-700 dark:text-slate-300">
+          <View style={styles.divider} />
+          <View style={styles.cardRow}>
+            <Text style={styles.cardRowLabel}>Hora</Text>
+            <Text style={styles.cardRowValue}>
               {txDate.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })}
             </Text>
           </View>
         </View>
       </Animated.View>
 
-      {/* ── Accounts: origin → destination ── */}
+      {/* Accounts */}
       <Animated.View entering={FadeInDown.delay(240).duration(350)}>
-        <View className="mx-4 mt-3 bg-white dark:bg-dark-surface rounded-2xl px-5 py-4 gap-3">
-          <Text className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Cuentas
-          </Text>
-          <View className="flex-row items-center gap-3">
+        <View style={styles.card}>
+          <Text style={styles.cardSectionLabel}>Cuentas</Text>
+          <View style={styles.accountsRow}>
             <MiniAccountCard account={fromAccount} isLoading={fromLoading} label="Origen" />
-            <Text className="text-slate-400 dark:text-slate-500 text-lg">→</Text>
+            <Text style={styles.arrowSeparator}>→</Text>
             <MiniAccountCard account={toAccount} isLoading={toLoading} label="Destino" />
           </View>
         </View>
       </Animated.View>
 
-      {/* ── Status timeline ── */}
+      {/* Status timeline */}
       <Animated.View entering={FadeInDown.delay(320).duration(350)}>
-        <View className="mx-4 mt-3 bg-white dark:bg-dark-surface rounded-2xl px-5 py-4 gap-2">
-          <Text className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-2">
-            Estado
-          </Text>
-          <TimelineStep
-            label="Iniciado"
-            detail={formatDateTime(tx.date)}
-            done
-          />
-          <TimelineStep
-            label="Procesado"
-            detail="Verificación completada"
-            done
-          />
-          <TimelineStep
-            label="Completado"
-            detail="Fondos acreditados"
-            done
-            isLast
-          />
+        <View style={styles.card}>
+          <Text style={styles.cardSectionLabel}>Estado</Text>
+          <TimelineStep label="Iniciado" detail={formatDateTime(tx.date)} />
+          <TimelineStep label="Procesado" detail="Verificación completada" />
+          <TimelineStep label="Completado" detail="Fondos acreditados" isLast />
         </View>
       </Animated.View>
 
-      {/* ── Download receipt ── */}
+      {/* Download receipt */}
       <Animated.View entering={FadeInDown.delay(400).duration(350)}>
-        <View className="mx-4 mt-4">
-          <Button label="Descargar recibo" onPress={handleDownloadReceipt} variant="ghost" />
-        </View>
+        <Pressable style={styles.receiptBtn} onPress={handleDownloadReceipt}>
+          <Download size={20} color="#3b82f6" strokeWidth={2} />
+          <Text style={styles.receiptBtnText}>Descargar recibo</Text>
+        </Pressable>
       </Animated.View>
     </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+  },
+  scrollContent: {
+    paddingBottom: 60,
+  },
+  skeletonHeader: {
+    paddingTop: 56,
+    paddingHorizontal: 20,
+    paddingBottom: 8,
+  },
+  skeletonAmountCard: {
+    alignItems: 'center',
+    gap: 12,
+    padding: 24,
+  },
+  skeletonCard: {
+    marginHorizontal: 20,
+    marginTop: 12,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 56,
+    paddingBottom: 12,
+    paddingHorizontal: 20,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badge: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  badgeText: {
+    fontSize: 13,
+    fontWeight: '700',
+    letterSpacing: 0.3,
+  },
+  amountCard: {
+    marginHorizontal: 20,
+    marginTop: 8,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    padding: 28,
+    alignItems: 'center',
+    gap: 8,
+  },
+  amountLabel: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  amount: {
+    fontSize: 48,
+    fontWeight: '800',
+    letterSpacing: -1,
+  },
+  amountDate: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 13,
+    marginTop: 4,
+  },
+  card: {
+    marginHorizontal: 20,
+    marginTop: 12,
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.08)',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  cardSectionLabel: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 14,
+  },
+  cardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 6,
+  },
+  cardRowLabel: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 13,
+  },
+  cardRowValue: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '600',
+    textAlign: 'right',
+    flex: 1,
+    marginLeft: 16,
+  },
+  mono: {
+    fontFamily: 'monospace',
+    fontWeight: '400',
+    color: 'rgba(255,255,255,0.7)',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+  },
+  accountsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  miniCard: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    borderRadius: 14,
+    padding: 12,
+    gap: 3,
+  },
+  miniCardLabel: {
+    color: 'rgba(255,255,255,0.4)',
+    fontSize: 11,
+    marginBottom: 4,
+  },
+  miniCardType: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  miniCardNumber: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 11,
+    fontFamily: 'monospace',
+  },
+  miniCardBalance: {
+    color: '#ffffff',
+    fontSize: 13,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  miniCardEmpty: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 11,
+  },
+  arrowSeparator: {
+    color: 'rgba(255,255,255,0.3)',
+    fontSize: 20,
+  },
+  timelineRow: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  timelineLeft: {
+    alignItems: 'center',
+    width: 20,
+  },
+  timelineDot: {
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timelineLine: {
+    width: 2,
+    flex: 1,
+    backgroundColor: 'rgba(16,185,129,0.25)',
+    marginTop: 4,
+    marginBottom: 0,
+  },
+  timelineContent: {
+    flex: 1,
+    gap: 2,
+  },
+  timelineLabel: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  timelineDetail: {
+    color: 'rgba(255,255,255,0.45)',
+    fontSize: 12,
+  },
+  receiptBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 20,
+    marginTop: 16,
+    backgroundColor: 'rgba(59,130,246,0.1)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(59,130,246,0.25)',
+    paddingVertical: 16,
+    gap: 10,
+  },
+  receiptBtnText: {
+    color: '#3b82f6',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+});
