@@ -88,9 +88,9 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.05)',
   },
   iconBox: {
-    width: 46,
-    height: 46,
-    borderRadius: 15,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -101,15 +101,15 @@ const styles = StyleSheet.create({
   },
   description: {
     color: '#ffffff',
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '600',
   },
   date: {
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.45)',
+    fontSize: 13,
   },
   amount: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '700',
   },
 });

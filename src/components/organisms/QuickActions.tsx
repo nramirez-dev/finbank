@@ -60,8 +60,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionButton: {
-    width: 62,
-    height: 62,
+    width: 60,
+    height: 60,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   actionLabel: {
-    color: 'rgba(255, 255, 255, 0.65)',
+    color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 12,
     fontWeight: '500',
   },

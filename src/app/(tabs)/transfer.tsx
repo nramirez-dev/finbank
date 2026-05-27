@@ -21,8 +21,10 @@ import {
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
-import { useAccounts } from '@/hooks/useAccounts';
+import { useAccounts, useAccountsByOwner } from '@/hooks/useAccounts';
 import { useTransfer } from '@/hooks/useTransfer';
+import { useAppStore } from '@/store/useAppStore';
+import { transferSchema } from '@/domain/schemas/transferSchema';
 import { formatCurrency } from '@/lib/formatCurrency';
 import type { Account } from '@/domain/entities/Account';
 
@@ -76,7 +78,9 @@ const AccountRow = ({ account, selected, onPress }: AccountRowProps) => (
 
 export default function TransferScreen() {
   const router = useRouter();
-  const { data: accounts = [] } = useAccounts();
+  const { activeProfileId } = useAppStore();
+  const { data: ownAccounts = [] } = useAccountsByOwner(activeProfileId);
+  const { data: allAccounts = [] } = useAccounts();
   const transfer = useTransfer();
 
   const [step, setStep] = useState(1);
@@ -84,20 +88,25 @@ export default function TransferScreen() {
   const [toId, setToId] = useState('');
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
+  const [step1Error, setStep1Error] = useState('');
+  const [step2Error, setStep2Error] = useState('');
 
-  const fromAccount = accounts.find((a) => a.id === fromId);
-  const toAccount = accounts.find((a) => a.id === toId);
+  const fromAccount = allAccounts.find((a) => a.id === fromId);
+  const toAccount = allAccounts.find((a) => a.id === toId);
   const amountNum = parseFloat(amount.replace(',', '.')) || 0;
 
   const handleConfirm = () => {
-    if (!fromId || !toId || amountNum <= 0 || description.trim().length < 3) return;
-    transfer.mutate(
-      { fromAccountId: fromId, toAccountId: toId, amount: amountNum, description: description.trim() },
-      {
-        onSuccess: () => setStep(4),
-        onError: () => setStep(5),
-      },
-    );
+    const result = transferSchema.safeParse({
+      fromAccountId: fromId,
+      toAccountId: toId,
+      amount: amountNum,
+      description: description.trim(),
+    });
+    if (!result.success) return;
+    transfer.mutate(result.data, {
+      onSuccess: () => setStep(4),
+      onError: () => setStep(5),
+    });
   };
 
   const handleReset = () => {
@@ -106,6 +115,8 @@ export default function TransferScreen() {
     setToId('');
     setAmount('');
     setDescription('');
+    setStep1Error('');
+    setStep2Error('');
     transfer.reset();
   };
 
@@ -187,6 +198,7 @@ export default function TransferScreen() {
       >
         <ScrollView
           style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
@@ -194,7 +206,7 @@ export default function TransferScreen() {
           {step === 1 && (
             <>
               <Text style={styles.sectionTitle}>Cuenta origen</Text>
-              {accounts.map((a) => (
+              {ownAccounts.map((a) => (
                 <AccountRow
                   key={a.id}
                   account={a}
@@ -225,8 +237,15 @@ export default function TransferScreen() {
                 ))}
               </View>
 
+              {step1Error ? <Text style={styles.errorText}>{step1Error}</Text> : null}
+
               <Pressable
-                onPress={() => fromId && amountNum > 0 && setStep(2)}
+                onPress={() => {
+                  if (!fromId) { setStep1Error('Selecciona una cuenta origen'); return; }
+                  if (amountNum <= 0) { setStep1Error('El monto debe ser mayor a 0'); return; }
+                  setStep1Error('');
+                  setStep(2);
+                }}
                 style={{ marginTop: 8, marginBottom: 32 }}
               >
                 <LinearGradient
@@ -245,7 +264,7 @@ export default function TransferScreen() {
           {step === 2 && (
             <>
               <Text style={styles.sectionTitle}>Cuenta destino</Text>
-              {accounts
+              {allAccounts
                 .filter((a) => a.id !== fromId)
                 .map((a) => (
                   <AccountRow
@@ -270,8 +289,15 @@ export default function TransferScreen() {
               </View>
               <Text style={styles.charCount}>{description.length}/100</Text>
 
+              {step2Error ? <Text style={styles.errorText}>{step2Error}</Text> : null}
+
               <Pressable
-                onPress={() => toId && description.trim().length >= 3 && setStep(3)}
+                onPress={() => {
+                  if (!toId) { setStep2Error('Selecciona una cuenta destino'); return; }
+                  if (description.trim().length < 3) { setStep2Error('La descripción debe tener al menos 3 caracteres'); return; }
+                  setStep2Error('');
+                  setStep(3);
+                }}
                 style={{ marginTop: 16, marginBottom: 32 }}
               >
                 <LinearGradient
@@ -406,6 +432,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
   },
+  scrollContent: {
+    paddingBottom: 100,
+  },
   sectionTitle: {
     color: '#ffffff',
     fontSize: 18,
@@ -474,7 +503,7 @@ const styles = StyleSheet.create({
   },
   currencyPrefix: {
     color: 'rgba(255,255,255,0.45)',
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '600',
     marginRight: 8,
   },
@@ -501,7 +530,7 @@ const styles = StyleSheet.create({
   },
   quickBtnText: {
     color: 'rgba(255,255,255,0.7)',
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: '600',
   },
   nextBtn: {
@@ -598,6 +627,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '700',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 13,
+    marginBottom: 8,
+    marginTop: 4,
   },
   // Result screens
   resultScreen: {

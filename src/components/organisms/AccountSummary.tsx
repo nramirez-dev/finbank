@@ -1,6 +1,7 @@
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { TrendingUp, TrendingDown } from 'lucide-react-native';
+import { Eye, EyeOff, TrendingUp, Wallet } from 'lucide-react-native';
 import { AccountCard } from '@/components/molecules/AccountCard';
 import { Skeleton } from '@/components/atoms/Skeleton';
 import type { Account } from '@/domain/entities/Account';
@@ -30,6 +31,8 @@ export const AccountSummary = ({
   selectedAccountId,
   onSelectAccount,
 }: AccountSummaryProps) => {
+  const [showBalance, setShowBalance] = useState(true);
+
   if (isLoading) return <AccountSummarySkeleton />;
 
   const totals = (accounts ?? []).reduce(
@@ -57,9 +60,20 @@ export const AccountSummary = ({
       >
         <View style={styles.balanceHeader}>
           <Text style={styles.balanceLabel}>SALDO TOTAL</Text>
-          <Text style={styles.balanceAmount}>{formatCurrency(totals.dop, 'DOP')}</Text>
+          <Pressable style={styles.balanceRow} onPress={() => setShowBalance((v) => !v)}>
+            <Text style={styles.balanceAmount}>
+              {showBalance ? formatCurrency(totals.dop, 'DOP') : '••••••'}
+            </Text>
+            <View style={styles.eyeButton}>
+              {showBalance
+                ? <Eye size={20} color="rgba(255,255,255,0.5)" />
+                : <EyeOff size={20} color="rgba(255,255,255,0.5)" />}
+            </View>
+          </Pressable>
           {totals.usd > 0 && (
-            <Text style={styles.balanceSecondary}>{formatCurrency(totals.usd, 'USD')}</Text>
+            <Text style={styles.balanceSecondary}>
+              {showBalance ? formatCurrency(totals.usd, 'USD') : '••••'}
+            </Text>
           )}
         </View>
 
@@ -80,7 +94,7 @@ export const AccountSummary = ({
 
           <View style={styles.statItem}>
             <View style={[styles.statIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-              <TrendingDown size={16} color="#3b82f6" />
+              <Wallet size={16} color="#3b82f6" />
             </View>
             <View>
               <Text style={styles.statLabel}>Monedas</Text>
@@ -138,15 +152,24 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   balanceLabel: {
-    color: 'rgba(255, 255, 255, 0.48)',
-    fontSize: 11,
-    fontWeight: '600',
-    letterSpacing: 1.8,
+    color: 'rgba(255, 255, 255, 0.5)',
+    fontSize: 13,
+    fontWeight: '500',
+    letterSpacing: 1.5,
     marginBottom: 8,
+    textTransform: 'uppercase',
+  },
+  balanceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  eyeButton: {
+    marginLeft: 12,
+    padding: 4,
   },
   balanceAmount: {
     color: '#fff',
-    fontSize: 38,
+    fontSize: 42,
     fontWeight: '700',
     letterSpacing: -1,
   },

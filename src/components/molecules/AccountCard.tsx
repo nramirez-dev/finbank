@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   cardBalance: {
     color: '#fff',
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: '700',
     letterSpacing: -0.5,
   },
