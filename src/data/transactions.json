@@ -268,5 +268,113 @@
     "fromAccountId": "acc-002",
     "toAccountId": "acc-002",
     "description": "Reembolso tarjeta"
+  },
+  {
+    "id": "txn-031",
+    "amount": 17200.00,
+    "date": "2026-02-25T09:10:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-001",
+    "description": "Nomina febrero"
+  },
+  {
+    "id": "txn-032",
+    "amount": 3800.00,
+    "date": "2026-02-20T14:30:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-002",
+    "description": "Ahorro programado"
+  },
+  {
+    "id": "txn-033",
+    "amount": 1200.00,
+    "date": "2026-02-15T11:00:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-001",
+    "description": "Pago internet"
+  },
+  {
+    "id": "txn-034",
+    "amount": 4500.00,
+    "date": "2026-02-08T16:20:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-004",
+    "toAccountId": "acc-004",
+    "description": "Pago freelance USD"
+  },
+  {
+    "id": "txn-035",
+    "amount": 16800.00,
+    "date": "2026-01-25T09:05:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-001",
+    "description": "Nomina enero"
+  },
+  {
+    "id": "txn-036",
+    "amount": 5500.00,
+    "date": "2026-01-18T13:45:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-004",
+    "description": "Compra USD"
+  },
+  {
+    "id": "txn-037",
+    "amount": 2100.00,
+    "date": "2026-01-12T10:15:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-003",
+    "description": "Supermercado"
+  },
+  {
+    "id": "txn-038",
+    "amount": 3300.00,
+    "date": "2026-01-05T08:40:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-002",
+    "toAccountId": "acc-002",
+    "description": "Intereses ahorro"
+  },
+  {
+    "id": "txn-039",
+    "amount": 19500.00,
+    "date": "2025-12-24T09:00:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-003",
+    "toAccountId": "acc-001",
+    "description": "Aguinaldo diciembre"
+  },
+  {
+    "id": "txn-040",
+    "amount": 8200.00,
+    "date": "2025-12-18T15:30:00.000Z",
+    "type": "retiro",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-001",
+    "description": "Compras navideñas"
+  },
+  {
+    "id": "txn-041",
+    "amount": 4700.00,
+    "date": "2025-12-10T11:20:00.000Z",
+    "type": "transferencia",
+    "fromAccountId": "acc-001",
+    "toAccountId": "acc-002",
+    "description": "Ahorro fin de año"
+  },
+  {
+    "id": "txn-042",
+    "amount": 2900.00,
+    "date": "2025-12-03T14:00:00.000Z",
+    "type": "depósito",
+    "fromAccountId": "acc-004",
+    "toAccountId": "acc-004",
+    "description": "Pago proyecto USD"
   }
 ]

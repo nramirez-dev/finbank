@@ -206,7 +206,7 @@ export default function TransferScreen() {
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
-          {/* ── Step 1: From account + amount ── */}
+          {/* ── Step 1: From account + To account + amount ── */}
           {step === 1 && (
             <>
               <Text style={[styles.sectionTitle, { color: c.text }]}>Cuenta origen</Text>
@@ -215,9 +215,21 @@ export default function TransferScreen() {
                   key={a.id}
                   account={a}
                   selected={fromId === a.id}
-                  onPress={() => setFromId(a.id)}
+                  onPress={() => { setFromId(a.id); if (toId === a.id) setToId(''); }}
                 />
               ))}
+
+              <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Cuenta destino</Text>
+              {allAccounts
+                .filter((a) => a.id !== fromId)
+                .map((a) => (
+                  <AccountRow
+                    key={a.id}
+                    account={a}
+                    selected={toId === a.id}
+                    onPress={() => setToId(a.id)}
+                  />
+                ))}
 
               <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Monto</Text>
               <View style={[styles.amountRow, { backgroundColor: c.inputBg, borderColor: c.border }]}>
@@ -246,6 +258,7 @@ export default function TransferScreen() {
               <Pressable
                 onPress={() => {
                   if (!fromId) { setStep1Error('Selecciona una cuenta origen'); return; }
+                  if (!toId) { setStep1Error('Selecciona una cuenta destino'); return; }
                   if (amountNum <= 0) { setStep1Error('El monto debe ser mayor a 0'); return; }
                   setStep1Error('');
                   setStep(2);
@@ -253,7 +266,7 @@ export default function TransferScreen() {
                 style={{ marginTop: 8, marginBottom: 32 }}
               >
                 <LinearGradient
-                  colors={fromId && amountNum > 0 ? ['#3b82f6', '#2563eb'] : ['#334155', '#334155']}
+                  colors={fromId && toId && amountNum > 0 ? ['#3b82f6', '#2563eb'] : ['#334155', '#334155']}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                   style={styles.nextBtn}
                 >
@@ -264,22 +277,10 @@ export default function TransferScreen() {
             </>
           )}
 
-          {/* ── Step 2: To account + description ── */}
+          {/* ── Step 2: Description ── */}
           {step === 2 && (
             <>
-              <Text style={[styles.sectionTitle, { color: c.text }]}>Cuenta destino</Text>
-              {allAccounts
-                .filter((a) => a.id !== fromId)
-                .map((a) => (
-                  <AccountRow
-                    key={a.id}
-                    account={a}
-                    selected={toId === a.id}
-                    onPress={() => setToId(a.id)}
-                  />
-                ))}
-
-              <Text style={[styles.sectionTitle, { marginTop: 28, color: c.text }]}>Descripción</Text>
+              <Text style={[styles.sectionTitle, { color: c.text }]}>Descripción</Text>
               <View style={[styles.descriptionInput, { backgroundColor: c.inputBg, borderColor: c.border }]}>
                 <TextInput
                   style={styles.descriptionTextInput}
@@ -297,7 +298,6 @@ export default function TransferScreen() {
 
               <Pressable
                 onPress={() => {
-                  if (!toId) { setStep2Error('Selecciona una cuenta destino'); return; }
                   if (description.trim().length < 3) { setStep2Error('La descripción debe tener al menos 3 caracteres'); return; }
                   setStep2Error('');
                   setStep(3);
@@ -305,7 +305,7 @@ export default function TransferScreen() {
                 style={{ marginTop: 16, marginBottom: 32 }}
               >
                 <LinearGradient
-                  colors={toId && description.trim().length >= 3 ? ['#3b82f6', '#2563eb'] : ['#334155', '#334155']}
+                  colors={description.trim().length >= 3 ? ['#3b82f6', '#2563eb'] : ['#334155', '#334155']}
                   start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
                   style={styles.nextBtn}
                 >

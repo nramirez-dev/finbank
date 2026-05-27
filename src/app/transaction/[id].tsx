@@ -140,7 +140,11 @@ export default function TransactionDetailScreen() {
       <Animated.View entering={FadeInDown.delay(80).duration(350)}>
         <View style={[styles.amountCard, { backgroundColor: c.surfaceAlt, borderColor: c.border }]}>
           <Text style={styles.amountLabel}>Monto de la transacción</Text>
-          <Text style={[styles.amount, { color: cfg.amountColor }]}>
+          <Text
+            style={[styles.amount, { color: cfg.amountColor }]}
+            adjustsFontSizeToFit
+            numberOfLines={1}
+          >
             {cfg.prefix}{formatCurrency(tx.amount)}
           </Text>
           <Text style={styles.amountDate}>{formatDateTime(tx.date)}</Text>
@@ -274,9 +278,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   amount: {
-    fontSize: 48,
+    fontSize: 36,
     fontWeight: '800',
     letterSpacing: -1,
+    width: '100%',
+    textAlign: 'center',
   },
   amountDate: {
     color: 'rgba(255,255,255,0.4)',
