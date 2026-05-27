@@ -17,8 +17,8 @@ export const BalanceChart = ({
   title = 'Ingresos vs gastos (6 meses)',
 }: BalanceChartProps) => {
   const { width } = useWindowDimensions();
-  // Horizontal padding on both sides (20px each)
-  const chartWidth = width - 40 - 32; // screen - px*2 - card padding
+  // screen width − marginHorizontal (20×2) − card padding (16×2)
+  const chartWidth = width - 40 - 32;
 
   if (isLoading) {
     return <Skeleton height={200} borderRadius={20} style={styles.skeleton} />;
@@ -88,6 +88,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.07)',
+    overflow: 'hidden',
   },
   title: {
     color: 'rgba(255,255,255,0.6)',
